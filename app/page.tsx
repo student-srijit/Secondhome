@@ -30,6 +30,7 @@ import {
 import { useToast } from "@/components/ui/use-toast"
 import HowItWorks from "@/components/how-it-works"
 import { SmartLocationInput } from "@/components/smart-location-input"
+import { AppDownloadBanner } from "@/components/app-download-banner"
 import { useLanguage } from "@/providers/language-provider"
 
 export default function Page() {
@@ -534,6 +535,9 @@ export default function Page() {
 
       {/* How It Works */}
       <HowItWorks />
+
+      {/* App Download Banner */}
+      <AppDownloadBanner />
 
       {/* List Property CTA - With Image */}
       <section 
