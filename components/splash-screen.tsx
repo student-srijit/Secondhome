@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import Image from "next/image"
 
 export function SplashScreen() {
   const [isMounted, setIsMounted] = useState(false)
@@ -10,24 +9,26 @@ export function SplashScreen() {
 
   useEffect(() => {
     setIsMounted(true)
-    const hasSeenSplash = sessionStorage.getItem("hasSeenSplash")
-    if (!hasSeenSplash) {
-      setShow(true)
-      // Allow 3.5 seconds for the user to admire the splash screen before dismissing it
-      const timer = setTimeout(() => {
-        setShow(false)
-        sessionStorage.setItem("hasSeenSplash", "true")
-      }, 3500)
-      return () => clearTimeout(timer)
+    try {
+      const hasSeenSplash = sessionStorage.getItem("hasSeenSplash")
+      if (!hasSeenSplash) {
+        setShow(true)
+        // Allow 3.5 seconds for the user to admire the splash screen before dismissing it
+        const timer = setTimeout(() => {
+          setShow(false)
+          sessionStorage.setItem("hasSeenSplash", "true")
+        }, 3500)
+        return () => clearTimeout(timer)
+      }
+    } catch (e) {
+      // Ignore if sessionStorage is not available
+      console.error("SessionStorage error", e)
     }
   }, [])
 
   // Avoid hydration mismatch by not rendering anything until mounted
   if (!isMounted) return null
 
-  // If we shouldn't show it and we've mounted, we can just render nothing instead of wrapping with AnimatePresence
-  // But to get the exit animation, AnimatePresence must be present when show becomes false.
-  
   return (
     <AnimatePresence>
       {show && (
@@ -56,12 +57,10 @@ export function SplashScreen() {
               transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 100 }}
               className="w-28 h-28 md:w-36 md:h-36 mb-8 relative"
             >
-               <Image 
-                 src="/sechome favicon.png" 
+               <img 
+                 src="/sechome%20favicon.png" 
                  alt="Second Home Logo" 
-                 fill 
-                 className="object-contain drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]" 
-                 priority
+                 className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(249,115,22,0.4)]" 
                />
             </motion.div>
             
