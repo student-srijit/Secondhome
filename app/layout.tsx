@@ -7,6 +7,7 @@ import { AuthProvider } from "@/providers/auth-provider"
 import { LanguageProvider } from "@/providers/language-provider"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { LayoutWrapper } from "@/components/layout-wrapper"
+import { SplashScreen } from "@/components/splash-screen"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -48,6 +49,7 @@ export default function RootLayout({
           <LanguageProvider>
             <AuthProvider>
               <LayoutWrapper>
+                <SplashScreen />
                 {children}
               </LayoutWrapper>
               <Toaster />
