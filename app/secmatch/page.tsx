@@ -65,6 +65,7 @@ function ProfileSkeleton() {
 // ─── Profile Card ──────────────────────────────────────────────────────────
 function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: number; isAuth: boolean }) {
   const router = useRouter()
+  const { t } = useLanguage()
   const color = AVATAR_COLORS[idx % AVATAR_COLORS.length]
   return (
     <motion.div initial="hidden" animate="show" variants={fadeUp} transition={{ delay: idx * 0.08 }}>
