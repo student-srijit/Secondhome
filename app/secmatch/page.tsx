@@ -10,6 +10,7 @@ import {
   Crown, Target, Search, ArrowRight, CheckCircle, Star, Users,
   MapPin, Zap, RefreshCw, Loader2, UserPlus
 } from "lucide-react"
+import { useLanguage } from "@/providers/language-provider"
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 interface LiveProfile {
@@ -21,18 +22,13 @@ interface LiveProfile {
 }
 interface LiveStats { value: string; label: string }
 
-// ─── Static UI content (not data) ─────────────────────────────────────────
-const HOW_IT_WORKS = [
-  { n: "01", title: "Create Your Profile",  body: "Fill in your interests, lifestyle, budget and accommodation type in our simple 4-step form.", icon: "👤" },
-  { n: "02", title: "Smart Matching",       body: "Our AI algorithm scores compatibility across 8 dimensions and surfaces your top matches with a % score.", icon: "🤖" },
-  { n: "03", title: "Connect",       body: "Request to connect with profiles you're interested in. When it's mutual, subscribe for ₹25 to chat and share contacts.", icon: "🤝" },
-]
-
-const WHY_US = [
-  { icon: Zap,           bg: "#fff7ed", ic: "#f97316", title: "AI Matching",      body: "Scored on 8 real dimensions — interests, budget, sleep, lifestyle and more." },
-  { icon: Shield,        bg: "#f0fdf4", ic: "#22c55e", title: "Gender-Safe Only",     body: "Boys matched with boys, girls with girls. No cross-gender matches, ever." },
-  { icon: Handshake,     bg: "#fff1f2", ic: "#f43f5e", title: "Mutual Approval",       body: "Contact details shared only when both users approve." },
-  { icon: MessageCircle, bg: "#eff6ff", ic: "#3b82f6", title: "Secure Chat",           body: "Chat first. Phone numbers only after both approve." },
+// We will use translation keys inline inside the component for HOW_IT_WORKS and WHY_US
+const HOW_IT_WORKS_ICONS = ["👤", "🤖", "🤝"]
+const WHY_US_DATA = [
+  { icon: Zap,           bg: "#fff7ed", ic: "#f97316", id: "ai" },
+  { icon: Shield,        bg: "#f0fdf4", ic: "#22c55e", id: "safe" },
+  { icon: Handshake,     bg: "#fff1f2", ic: "#f43f5e", id: "mutual" },
+  { icon: MessageCircle, bg: "#eff6ff", ic: "#3b82f6", id: "chat" },
 ]
 
 const SLEEP_LABELS: Record<string, string> = { early_bird: "🌅 Early Bird", night_owl: "🦉 Night Owl", flexible: "🌤 Flexible" }
@@ -89,11 +85,11 @@ function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: numb
         {/* Content — blur-locked for guests */}
         <div style={{ padding: "18px 20px", position: "relative" }}>
           {!isAuth && (
-            <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(0px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10, borderRadius: "0 0 20px 20px" }}
+            <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(5px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10, borderRadius: "0 0 20px 20px" }}
               onClick={() => router.push("/signup")}>
               <div style={{ background: "#fff", padding: "12px 24px", borderRadius: 99, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
                 <Lock style={{ width: 16, height: 16, color: "#f97316" }} />
-                <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>Sign up to view details</span>
+                <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{t("secmatch.profile.cta")}</span>
               </div>
             </div>
           )}
@@ -141,6 +137,7 @@ function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: numb
 export default function SecMatchPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { t } = useLanguage()
 
   // All state is live — nothing hardcoded
   const [stats, setStats] = useState<LiveStats[]>([])
@@ -153,7 +150,7 @@ export default function SecMatchPage() {
 
   const isAuth = status === "authenticated"
   const ctaHref  = !isAuth ? "/signup" : hasProfile ? "/secmatch/matches" : "/secmatch/profile"
-  const ctaLabel = !isAuth ? "Get Started — It's Free" : hasProfile ? "View My Matches" : "Create My Profile"
+  const ctaLabel = !isAuth ? t("secmatch.cta.free") : hasProfile ? t("secmatch.cta.matches") : t("secmatch.cta.create")
 
   // Fetch live stats
   useEffect(() => {
@@ -203,19 +200,14 @@ export default function SecMatchPage() {
 
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-7"
               style={{ background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.35)", color: "#fff" }}>
-              <Users className="w-4 h-4" /> Smart Roommate Matching
+              <Users className="w-4 h-4" /> {t("secmatch.smart")}
             </span>
 
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-6 drop-shadow-xl">
-              Find the Roommate<br />
-              <span style={{ color: "#ffedd5" }}>You'll Actually Love</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-6 drop-shadow-xl"
+                dangerouslySetInnerHTML={{ __html: t("secmatch.title").replace("You'll Actually Love", "<span style='color: #ffedd5'>You'll Actually Love</span>").replace("सच में पसंद आए", "<span style='color: #ffedd5'>सच में पसंद आए</span>").replace("ನಿಜವಾಗಿಯೂ ಇಷ್ಟಪಡುವ", "<span style='color: #ffedd5'>ನಿಜವಾಗಿಯೂ ಇಷ್ಟಪಡುವ</span>").replace("পছন্দের", "<span style='color: #ffedd5'>পছন্দের</span>") }}>
             </h1>
 
-            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed">
-              Stop scrolling WhatsApp groups. Our matching engine connects you with roommates who share your{" "}
-              <strong className="text-white">interests</strong>,{" "}
-              <strong className="text-white">lifestyle</strong> &{" "}
-              <strong className="text-white">budget</strong> — safely and instantly.
+            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed" dangerouslySetInnerHTML={{__html: t("secmatch.subtitle").replace("interests", "<strong>interests</strong>").replace("lifestyle", "<strong>lifestyle</strong>").replace("budget", "<strong>budget</strong>")}}>
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-14">
@@ -243,7 +235,7 @@ export default function SecMatchPage() {
                 // Stats are 0 (fresh platform) — show "Be among the first!"
                 <div className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl text-white/80 text-sm"
                   style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                  <Sparkles className="w-4 h-4" /> Be among the first students on SecMatch!
+                  <Sparkles className="w-4 h-4" /> {t("secmatch.stats.empty")}
                 </div>
               )}
             </div>
@@ -256,22 +248,22 @@ export default function SecMatchPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
-              style={{ background: "#fff7ed", color: "#ea580c" }}>How It Works</span>
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4" style={{ color: "#111827" }}>Three Simple Steps</h2>
+              style={{ background: "#fff7ed", color: "#ea580c" }}>{t("secmatch.how.tag")}</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4" style={{ color: "#111827" }}>{t("secmatch.how.title")}</h2>
             <p className="text-lg max-w-xl mx-auto" style={{ color: "#6b7280" }}>
-              From profile creation to finding your roommate — takes less than 5 minutes.
+              {t("secmatch.how.subtitle")}
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {HOW_IT_WORKS.map((s, i) => (
-              <motion.div key={s.n} initial="hidden" whileInView="show" variants={fadeUp} transition={{ delay: i * 0.12 }} viewport={{ once: true }}>
+            {[1, 2, 3].map((step, i) => (
+              <motion.div key={step} initial="hidden" whileInView="show" variants={fadeUp} transition={{ delay: i * 0.12 }} viewport={{ once: true }}>
                 <div className="h-full p-8 rounded-2xl border transition-all hover:shadow-lg hover:-translate-y-1"
                   style={{ background: "#ffffff", borderColor: "#e5e7eb" }}>
-                  <div className="text-5xl font-black mb-5 select-none" style={{ color: "#fed7aa" }}>{s.n}</div>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5" style={{ background: "#fff7ed" }}>{s.icon}</div>
-                  <h3 className="text-xl font-bold mb-3" style={{ color: "#111827" }}>{s.title}</h3>
-                  <p className="leading-relaxed" style={{ color: "#6b7280" }}>{s.body}</p>
+                  <div className="text-5xl font-black mb-5 select-none" style={{ color: "#fed7aa" }}>0{step}</div>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5" style={{ background: "#fff7ed" }}>{HOW_IT_WORKS_ICONS[i]}</div>
+                  <h3 className="text-xl font-bold mb-3" style={{ color: "#111827" }}>{t(`secmatch.how.step${step}.title`)}</h3>
+                  <p className="leading-relaxed" style={{ color: "#6b7280" }}>{t(`secmatch.how.step${step}.body`)}</p>
                 </div>
               </motion.div>
             ))}
@@ -284,23 +276,22 @@ export default function SecMatchPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
-              style={{ background: "#fff7ed", color: "#ea580c" }}>Why SecMatch</span>
-            <h2 className="text-4xl md:text-5xl font-extrabold mb-4" style={{ color: "#111827" }}>
-              Built for Students, <span style={{ color: "#f97316" }}>By Students</span>
+              style={{ background: "#fff7ed", color: "#ea580c" }}>{t("secmatch.why.tag")}</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4" style={{ color: "#111827" }} dangerouslySetInnerHTML={{ __html: t("secmatch.why.title").replace("By Students", "<span style='color: #f97316'>By Students</span>").replace("छात्रों द्वारा निर्मित", "<span style='color: #f97316'>छात्रों द्वारा निर्मित</span>").replace("ವಿದ್ಯಾರ್ಥಿಗಳಿಂದ", "<span style='color: #f97316'>ವಿದ್ಯಾರ್ಥಿಗಳಿಂದ</span>").replace("ছাত্রদের দ্বারা তৈরি", "<span style='color: #f97316'>ছাত্রদের দ্বারা তৈরি</span>") }}>
             </h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {WHY_US.map((w, i) => {
+            {WHY_US_DATA.map((w, i) => {
               const Icon = w.icon
               return (
-                <motion.div key={w.title} initial="hidden" whileInView="show" variants={fadeUp} transition={{ delay: i * 0.1 }} viewport={{ once: true }}>
+                <motion.div key={w.id} initial="hidden" whileInView="show" variants={fadeUp} transition={{ delay: i * 0.1 }} viewport={{ once: true }}>
                   <div className="h-full p-6 rounded-2xl border transition-all hover:shadow-lg hover:-translate-y-1"
                     style={{ background: "#ffffff", borderColor: "#e5e7eb" }}>
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ background: w.bg }}>
                       <Icon className="w-6 h-6" style={{ color: w.ic }} />
                     </div>
-                    <h3 className="font-bold text-lg mb-2" style={{ color: "#111827" }}>{w.title}</h3>
-                    <p className="text-sm leading-relaxed" style={{ color: "#6b7280" }}>{w.body}</p>
+                    <h3 className="font-bold text-lg mb-2" style={{ color: "#111827" }}>{t(`secmatch.why.${w.id}.title`)}</h3>
+                    <p className="text-sm leading-relaxed" style={{ color: "#6b7280" }}>{t(`secmatch.why.${w.id}.body`)}</p>
                   </div>
                 </motion.div>
               )
@@ -316,10 +307,10 @@ export default function SecMatchPage() {
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
               style={{ background: "#fff7ed", color: "#ea580c" }}>Live Profiles</span>
             <h2 className="text-4xl md:text-5xl font-extrabold mb-3" style={{ color: "#111827" }}>
-              Real Students on SecMatch
+              {t("secmatch.preview.title")}
             </h2>
             <p className="text-lg mb-8" style={{ color: "#6b7280" }}>
-              These are real student profiles on our platform. Sign up to see your personalized matches.
+              {t("secmatch.preview.subtitle")}
             </p>
 
             {/* Gender Toggle */}
@@ -328,7 +319,7 @@ export default function SecMatchPage() {
                 <button key={g} onClick={() => setActiveGender(g)}
                   className="px-7 py-2.5 rounded-lg font-semibold text-sm transition-all"
                   style={activeGender === g ? { background: "#f97316", color: "#fff", boxShadow: "0 2px 8px rgba(249,115,22,0.4)" } : { background: "transparent", color: "#6b7280" }}>
-                  {g === "male" ? "👦 Boys" : "👧 Girls"}
+                  {g === "male" ? "👦 " + t("secmatch.preview.boys").split(" ")[0] : "👧 " + t("secmatch.preview.girls").split(" ")[0]}
                 </button>
               ))}
             </div>
