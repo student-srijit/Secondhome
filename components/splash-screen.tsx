@@ -80,13 +80,6 @@ export function SplashScreen() {
             </motion.p>
           </motion.div>
 
-          {/* Loading Progress Bar */}
-          <motion.div
-             initial={{ scaleX: 0 }}
-             animate={{ scaleX: 1 }}
-             transition={{ delay: 0.5, duration: 2.8, ease: "easeInOut" }}
-             className="absolute bottom-0 left-0 h-1.5 bg-gradient-to-r from-orange-600 via-yellow-500 to-orange-600 w-full origin-left shadow-[0_0_15px_rgba(249,115,22,0.8)]"
-          />
         </motion.div>
       )}
     </AnimatePresence>
