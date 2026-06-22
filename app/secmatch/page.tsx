@@ -331,20 +331,20 @@ export default function SecMatchPage() {
               [0, 1, 2, 3].map(i => <ProfileSkeleton key={i} />)
             ) : profilesError ? (
               <div className="col-span-2 text-center py-12">
-                <p style={{ color: "#9ca3af" }}>Could not load profiles. Please try again.</p>
+                <p style={{ color: "#9ca3af" }}>{t("secmatch.preview.error")}</p>
                 <button onClick={() => setActiveGender(g => g)} className="mt-4 text-orange-500 font-semibold text-sm flex items-center gap-2 mx-auto">
-                  <RefreshCw className="w-4 h-4" /> Retry
+                  <RefreshCw className="w-4 h-4" /> {t("secmatch.preview.retry")}
                 </button>
               </div>
             ) : profiles.length === 0 ? (
               <div className="col-span-2 text-center py-16">
                 <div style={{ fontSize: 48, marginBottom: 12 }}>🙌</div>
-                <p className="text-xl font-bold mb-2" style={{ color: "#111827" }}>Be the first {activeGender === "male" ? "boy" : "girl"} on SecMatch!</p>
-                <p style={{ color: "#9ca3af", marginBottom: 20 }}>No {activeGender} profiles yet — create yours and start matching.</p>
+                <p className="text-xl font-bold mb-2" style={{ color: "#111827" }}>{activeGender === "male" ? t("secmatch.preview.empty.title.male") : t("secmatch.preview.empty.title.female")}</p>
+                <p style={{ color: "#9ca3af", marginBottom: 20 }}>{t("secmatch.preview.empty.desc")}</p>
                 <Link href="/secmatch/profile">
                   <button className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl text-white"
                     style={{ background: "#f97316" }}>
-                    Create My Profile <ArrowRight className="w-4 h-4" />
+                    {t("secmatch.cta.create")} <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
               </div>
@@ -363,7 +363,7 @@ export default function SecMatchPage() {
                 className="inline-flex items-center gap-2 font-bold text-base px-8 py-4 rounded-xl shadow-lg transition-all hover:shadow-xl hover:-translate-y-0.5"
                 style={{ background: "#f97316", color: "#ffffff" }}>
                 <Search className="w-5 h-5" />
-                {isAuth ? "Find My Matches" : "See My AI Matches — Free"}
+                {isAuth ? t("secmatch.preview.btn.auth") : t("secmatch.preview.btn.guest")}
                 <ArrowRight className="w-5 h-5" />
               </button>
             </Link>
@@ -376,28 +376,28 @@ export default function SecMatchPage() {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-14">
             <span className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
-              style={{ background: "#fff7ed", color: "#ea580c" }}>Pricing</span>
+              style={{ background: "#fff7ed", color: "#ea580c" }}>{t("secmatch.pricing.tag")}</span>
             <h2 className="text-4xl md:text-5xl font-extrabold mb-3" style={{ color: "#111827" }}>
-              Simple, Student-Friendly
+              {t("secmatch.pricing.title")}
             </h2>
             <p className="text-lg" style={{ color: "#6b7280" }}>
-              Start free. Unlock everything for ₹25/month — less than a chai.
+              {t("secmatch.pricing.subtitle")}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Free */}
             <div className="p-8 rounded-2xl border" style={{ background: "#fff", borderColor: "#e5e7eb" }}>
-              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#9ca3af" }}>Free Plan</p>
-              <div className="text-5xl font-black mb-1" style={{ color: "#111827" }}>₹0</div>
-              <p className="text-sm mb-8" style={{ color: "#9ca3af" }}>Forever free</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#9ca3af" }}>{t("secmatch.pricing.free.title")}</p>
+              <div className="text-5xl font-black mb-1" style={{ color: "#111827" }}>{t("secmatch.pricing.free.price")}</div>
+              <p className="text-sm mb-8" style={{ color: "#9ca3af" }}>{t("secmatch.pricing.free.desc")}</p>
               <ul className="space-y-3 mb-8">
-                {["Create your profile", "See matched profiles", "5 connection requests per day", "View AI compatibility scores"].map(f => (
+                {[t("secmatch.pricing.free.feat1"), t("secmatch.pricing.free.feat2"), t("secmatch.pricing.free.feat3"), t("secmatch.pricing.free.feat4")].map(f => (
                   <li key={f} className="flex items-center gap-3 text-sm" style={{ color: "#374151" }}>
                     <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: "#22c55e" }} />{f}
                   </li>
                 ))}
-                {["Chat with roommates", "Get phone numbers", "Unlimited connections"].map(f => (
+                {[t("secmatch.pricing.free.no1"), t("secmatch.pricing.free.no2"), t("secmatch.pricing.free.no3")].map(f => (
                   <li key={f} className="flex items-center gap-3 text-sm line-through" style={{ color: "#d1d5db" }}>
                     <Lock className="w-4 h-4 flex-shrink-0" style={{ color: "#e5e7eb" }} />{f}
                   </li>
@@ -408,7 +408,7 @@ export default function SecMatchPage() {
                   style={{ borderColor: "#e5e7eb", color: "#374151", background: "#fff" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#f97316"; (e.currentTarget as HTMLButtonElement).style.color = "#f97316" }}
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#e5e7eb"; (e.currentTarget as HTMLButtonElement).style.color = "#374151" }}>
-                  Get Started Free
+                  {t("secmatch.pricing.free.btn")}
                 </button>
               </Link>
             </div>
@@ -417,16 +417,16 @@ export default function SecMatchPage() {
             <div className="p-8 rounded-2xl relative overflow-hidden border-2" style={{ background: "#fff7ed", borderColor: "#f97316" }}>
               <div className="absolute top-0 right-0 flex items-center gap-1 px-4 py-2 rounded-bl-xl text-xs font-bold text-white"
                 style={{ background: "#f97316" }}>
-                <Crown className="w-3 h-3" /> MOST POPULAR
+                <Crown className="w-3 h-3" /> {t("secmatch.pricing.pro.badge")}
               </div>
-              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#ea580c" }}>Pro Plan</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#ea580c" }}>{t("secmatch.pricing.pro.title")}</p>
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-5xl font-black" style={{ color: "#111827" }}>₹25</span>
-                <span className="text-sm" style={{ color: "#9ca3af" }}>/month</span>
+                <span className="text-5xl font-black" style={{ color: "#111827" }}>{t("secmatch.pricing.pro.price")}</span>
+                <span className="text-sm" style={{ color: "#9ca3af" }}>{t("secmatch.pricing.pro.period")}</span>
               </div>
-              <p className="text-sm mb-8" style={{ color: "#9ca3af" }}>Cancel any time ☕</p>
+              <p className="text-sm mb-8" style={{ color: "#9ca3af" }}>{t("secmatch.pricing.pro.desc")}</p>
               <ul className="space-y-3 mb-8">
-                {["Everything in Free", "Unlimited connections per day", "Chat with all your roommates", "Phone numbers after mutual approval", "Priority match recommendations", "See who requested to connect first"].map(f => (
+                {[t("secmatch.pricing.pro.feat1"), t("secmatch.pricing.pro.feat2"), t("secmatch.pricing.pro.feat3"), t("secmatch.pricing.pro.feat4"), t("secmatch.pricing.pro.feat5"), t("secmatch.pricing.pro.feat6")].map(f => (
                   <li key={f} className="flex items-center gap-3 text-sm" style={{ color: "#374151" }}>
                     <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: "#f97316" }} />{f}
                   </li>
@@ -438,7 +438,7 @@ export default function SecMatchPage() {
                   style={{ background: "#f97316", boxShadow: "0 4px 14px rgba(249,115,22,0.35)" }}
                   onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "#ea580c"}
                   onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "#f97316"}>
-                  <Crown className="w-4 h-4" /> Get SecMatch Pro <ArrowRight className="w-4 h-4" />
+                  <Crown className="w-4 h-4" /> {t("secmatch.pricing.pro.btn")} <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>
             </div>
@@ -453,18 +453,18 @@ export default function SecMatchPage() {
         <div className="container mx-auto px-4 text-center relative z-10">
           <motion.div initial="hidden" whileInView="show" variants={fadeUp} viewport={{ once: true }}>
             <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-5 drop-shadow-xl">
-              Your Perfect Roommate is Already Here
+              {t("secmatch.final.title")}
             </h2>
             <p className="text-xl text-white/90 mb-10 max-w-lg mx-auto">
               {stats.length > 0 && stats[0]?.value !== "0+"
-                ? `Join ${stats[0].value} students already on SecMatch.`
-                : "Join the growing community of students finding their ideal roommates."}
+                ? `${t("secmatch.final.desc1")}${stats[0].value}${t("secmatch.final.desc2")}`
+                : t("secmatch.final.descFallback")}
             </p>
             <Link href={ctaHref}>
               <button id="secmatch-final-cta"
                 className="inline-flex items-center gap-3 font-bold text-lg px-12 py-5 rounded-2xl shadow-2xl transition-all hover:-translate-y-1"
                 style={{ background: "#ffffff", color: "#ea580c" }}>
-                Start Matching Now <ArrowRight className="w-6 h-6" />
+                {t("secmatch.final.btn")} <ArrowRight className="w-6 h-6" />
               </button>
             </Link>
           </motion.div>
