@@ -149,6 +149,7 @@ export async function GET(request: NextRequest) {
         sharedInterests: (myProfile as any).interests?.filter((i: string) =>
           candidate.interests?.includes(i)
         ) || [],
+        image: candidate.photo,
       }))
       .sort((a: any, b: any) => b.compatibilityScore - a.compatibilityScore)
       .slice(0, 10) // Top 10 matches
@@ -167,11 +168,11 @@ export async function GET(request: NextRequest) {
     const theirLikedIds = new Set(theirLikes.map((l: any) => l.fromUserId))
 
     // Mutuals: both liked each other
-    const mutualMatches = await SecMatchProfile.find({
+    const mutualMatches = (await SecMatchProfile.find({
       userId: {
         $in: Array.from(myLikedIds).filter((id) => theirLikedIds.has(id)),
       },
-    }).lean()
+    }).lean()).map((m: any) => ({ ...m, image: m.photo }))
 
     return NextResponse.json({
       matches: scored,

@@ -5,25 +5,26 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { User, Home, Handshake, ChevronLeft, ChevronRight, CheckCircle, Sparkles, MapPin, IndianRupee, Bot, Calendar as CalendarIcon, X } from "lucide-react"
+import { User, Home, Handshake, ChevronLeft, ChevronRight, CheckCircle, Sparkles, MapPin, IndianRupee, Bot, Calendar as CalendarIcon, X, Code, Music, Gamepad2, Book, Dumbbell, Palette, PartyPopper, Trophy, Plane, Clapperboard, Camera, ChefHat, HeartPulse, Rocket, Zap, Bike, Sofa, Building, Building2, RefreshCcw, Sun, CloudSun, Moon, Ban, Utensils, Flame, Wine, Users, HelpCircle, Coffee, BookOpen, Brush } from "lucide-react"
+import Image from "next/image"
 
 const INTERESTS = [
-  { id: "Coding", emoji: "💻", label: "Coding" },
-  { id: "Music", emoji: "🎵", label: "Music" },
-  { id: "Gaming", emoji: "🎮", label: "Gaming" },
-  { id: "Reading", emoji: "📚", label: "Reading" },
-  { id: "Fitness", emoji: "💪", label: "Fitness" },
-  { id: "Art", emoji: "🎨", label: "Art" },
-  { id: "Dance", emoji: "💃", label: "Dance" },
-  { id: "Sports", emoji: "⚽", label: "Sports" },
-  { id: "Travel", emoji: "✈️", label: "Travel" },
-  { id: "Movies", emoji: "🎬", label: "Movies" },
-  { id: "Photography", emoji: "📸", label: "Photography" },
-  { id: "Cooking", emoji: "👨‍🍳", label: "Cooking" },
-  { id: "Yoga", emoji: "🧘", label: "Yoga" },
-  { id: "Entrepreneurship", emoji: "🚀", label: "Startups" },
-  { id: "Anime", emoji: "⛩️", label: "Anime" },
-  { id: "Cycling", emoji: "🚴", label: "Cycling" },
+  { id: "Coding", icon: Code, label: "Coding" },
+  { id: "Music", icon: Music, label: "Music" },
+  { id: "Gaming", icon: Gamepad2, label: "Gaming" },
+  { id: "Reading", icon: Book, label: "Reading" },
+  { id: "Fitness", icon: Dumbbell, label: "Fitness" },
+  { id: "Art", icon: Palette, label: "Art" },
+  { id: "Dance", icon: PartyPopper, label: "Dance" },
+  { id: "Sports", icon: Trophy, label: "Sports" },
+  { id: "Travel", icon: Plane, label: "Travel" },
+  { id: "Movies", icon: Clapperboard, label: "Movies" },
+  { id: "Photography", icon: Camera, label: "Photography" },
+  { id: "Cooking", icon: ChefHat, label: "Cooking" },
+  { id: "Yoga", icon: HeartPulse, label: "Yoga" },
+  { id: "Entrepreneurship", icon: Rocket, label: "Startups" },
+  { id: "Anime", icon: Zap, label: "Anime" },
+  { id: "Cycling", icon: Bike, label: "Cycling" },
 ]
 
 const STEPS = [
@@ -66,15 +67,17 @@ function Input({ label, required, hint, children }: { label: string; required?: 
   )
 }
 
-function Pill({ value, current, onChange, label }: { value: string; current: string; onChange: (v: string) => void; label: string }) {
+function Pill({ value, current, onChange, label, icon: Icon }: { value: string; current: string; onChange: (v: string) => void; label: string; icon?: any }) {
   const active = current === value
   return (
     <button type="button" onClick={() => onChange(value)}
       style={{
+        display: "flex", alignItems: "center", gap: 6,
         padding: "10px 16px", borderRadius: 12, border: `2px solid ${active ? "#f97316" : "#e5e7eb"}`,
         background: active ? "#fff7ed" : "#ffffff", color: active ? "#ea580c" : "#6b7280",
         fontWeight: 600, fontSize: 13, cursor: "pointer", transition: "all 0.15s",
       }}>
+      {Icon && <Icon style={{ width: 14, height: 14 }} />}
       {label}
     </button>
   )
@@ -164,7 +167,7 @@ function InteractiveDatePicker({ value, onChange }: { value: string, onChange: (
 
 export default function SecMatchProfilePage() {
   const router = useRouter()
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState<F>(init)
   const [saving, setSaving] = useState(false)
@@ -187,14 +190,19 @@ export default function SecMatchProfilePage() {
     return true
   }
 
-  const next = () => { if (ok()) setStep(s => s + 1) }
+  const next = () => { 
+    if (ok()) {
+      setStep(s => s + 1)
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    }
+  }
   const submit = async () => {
     if (!ok()) return
     setSaving(true); setErr("")
     try {
       const res = await fetch("/api/secmatch/profile", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, age: +form.age, budgetMin: +form.budgetMin, budgetMax: +form.budgetMax, cleanlinessLevel: +form.cleanlinessLevel }),
+        body: JSON.stringify({ ...form, photo: session?.user?.image, age: +form.age, budgetMin: +form.budgetMin, budgetMax: +form.budgetMax, cleanlinessLevel: +form.cleanlinessLevel }),
       })
       const d = await res.json()
       if (!res.ok) { setErr(d.error || "Something went wrong."); return }
@@ -210,16 +218,22 @@ export default function SecMatchProfilePage() {
     setAiGenerating(true)
     let text = ""
     
+    const nameStr = form.name ? form.name.split(" ")[0] : "a student"
+    const locStr = form.preferredLocation ? ` near ${form.preferredLocation}` : ""
+    const courseStr = form.course ? ` studying ${form.course}` : ""
+    const budStr = form.budgetMax ? ` with a budget up to ₹${form.budgetMax}` : ""
+    const ageStr = form.age ? `${form.age}yo ` : ""
+
     if (vibe === "studious") {
-      text = `Hey! I'm ${form.name ? form.name.split(" ")[0] : "a student"} focused on my academics in ${form.course || "college"}. I value a peaceful, clean environment to study and relax. Looking for a respectful roommate to share a great space! 📚✨`
+      text = `Hey! I'm ${nameStr}, a ${ageStr}student${courseStr}. I'm looking for a place${locStr}${budStr}. I value a peaceful, clean environment to focus on my academics. Looking for a respectful roommate to share a great space!`
     } else if (vibe === "chill") {
-      text = `What's up! I'm easy-going and love a chill vibe at home. Down for weekend movie nights or just hanging out. As long as we keep the common areas clean, we'll get along great! 🍕🎮`
+      text = `What's up! I'm ${nameStr}${courseStr}. Easy-going and love a chill vibe at home. Down for weekend movie nights or just hanging out. Looking for a flat${locStr}${budStr}. As long as we keep the common areas clean, we'll get along great!`
     } else if (vibe === "creative") {
-      text = `Hi! I'm a creative soul who loves art, music, and good energy. I keep my space organized and love making a house feel like a home. Looking for a roommate with good vibes! 🎨✨`
+      text = `Hi! I'm ${nameStr}, a creative soul looking for a roommate${locStr}. I keep my space organized and love making a house feel like a home. Looking for a place${budStr} with someone who brings good energy!`
     } else if (vibe === "fitness") {
-      text = `Hey! Fitness and health are my top priorities. I stick to a good routine, eat clean, and hit the gym. Very disciplined and clean roommate looking for someone with a similar healthy lifestyle! 💪🥗`
+      text = `Hey! I'm ${nameStr}. Fitness and health are my top priorities. I stick to a good routine, eat clean, and hit the gym. Very disciplined and clean roommate looking for a spot${locStr}${budStr} with someone who shares a similar healthy lifestyle!`
     } else {
-      text = `Hi there! I'm an organized and friendly student looking for a like-minded roommate. I believe in clear communication, keeping the place tidy, and respecting each other's personal space. Let's connect! 🤝`
+      text = `Hi there! I'm ${nameStr}, an organized and friendly ${ageStr}student looking for a like-minded roommate${locStr}${budStr}. I believe in clear communication, keeping the place tidy, and respecting each other's personal space. Let's connect!`
     }
 
     set("bio", "")
@@ -283,8 +297,26 @@ export default function SecMatchProfilePage() {
           {step === 1 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", marginBottom: 24, display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ background: "#fff7ed", padding: "6px 8px", borderRadius: 8, fontSize: 14 }}>👤</span> Personal Information
+                <div style={{ background: "#fff7ed", padding: "6px", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <User style={{ width: 16, height: 16, color: "#ea580c" }} />
+                </div>
+                Personal Information
               </h2>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24, padding: 16, background: "#f9fafb", borderRadius: 12, border: "1px solid #e5e7eb" }}>
+                {session?.user?.image ? (
+                  <Image src={session.user.image} alt="Profile" width={50} height={50} style={{ width: 50, height: 50, borderRadius: "50%", border: "2px solid #e5e7eb", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ width: 50, height: 50, borderRadius: "50%", background: "#e5e7eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <User style={{ width: 24, height: 24, color: "#9ca3af" }} />
+                  </div>
+                )}
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#111827", margin: "0 0 2px" }}>{session?.user?.name || "Logged In User"}</p>
+                  <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>{session?.user?.email}</p>
+                </div>
+              </div>
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
                 <div style={{ gridColumn: "1 / -1" }}>
                   <Input label="Full Name" required>
@@ -299,9 +331,9 @@ export default function SecMatchProfilePage() {
               <div style={{ marginBottom: 16 }}>
                 <Input label="Gender" required hint="🔒 Safety: Boys matched with boys, Girls matched with girls only">
                   <div style={{ display: "flex", gap: 10, flexWrap: "wrap" as any }}>
-                    <Pill value="male" current={form.gender} onChange={v => set("gender", v)} label="👦 Male" />
-                    <Pill value="female" current={form.gender} onChange={v => set("gender", v)} label="👧 Female" />
-                    <Pill value="other" current={form.gender} onChange={v => set("gender", v)} label="🏳️‍🌈 Other" />
+                    <Pill value="male" current={form.gender} onChange={v => set("gender", v)} label="Male" icon={User} />
+                    <Pill value="female" current={form.gender} onChange={v => set("gender", v)} label="Female" icon={User} />
+                    <Pill value="other" current={form.gender} onChange={v => set("gender", v)} label="Other" icon={User} />
                   </div>
                 </Input>
               </div>
@@ -344,20 +376,23 @@ export default function SecMatchProfilePage() {
                 
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" as any, marginBottom: 12 }}>
                   {[
-                    { id: "chill", l: "🍕 Chill" }, { id: "studious", l: "📚 Studious" }, 
-                    { id: "creative", l: "🎨 Creative" }, { id: "fitness", l: "💪 Fitness" }
-                  ].map(v => (
+                    { id: "chill", l: "Chill", icon: Coffee }, { id: "studious", l: "Studious", icon: BookOpen }, 
+                    { id: "creative", l: "Creative", icon: Brush }, { id: "fitness", l: "Fitness", icon: Dumbbell }
+                  ].map(v => {
+                    const Icon = v.icon
+                    return (
                     <button key={v.id} type="button" onClick={() => setVibe(v.id)}
-                      style={{ padding: "6px 12px", borderRadius: 99, fontSize: 12, fontWeight: 700, border: `2px solid ${vibe === v.id ? "#f97316" : "#fdba74"}`, background: vibe === v.id ? "#f97316" : "#fff", color: vibe === v.id ? "#fff" : "#ea580c", cursor: "pointer", transition: "all 0.2s" }}>
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 99, fontSize: 12, fontWeight: 700, border: `2px solid ${vibe === v.id ? "#f97316" : "#fdba74"}`, background: vibe === v.id ? "#f97316" : "#fff", color: vibe === v.id ? "#fff" : "#ea580c", cursor: "pointer", transition: "all 0.2s" }}>
+                      <Icon style={{ width: 14, height: 14 }} />
                       {v.l}
                     </button>
-                  ))}
+                  )})}
                 </div>
                 
                 <button type="button" onClick={generateBio} disabled={aiGenerating || !vibe}
                   style={{ width: "100%", padding: "10px", borderRadius: 12, background: aiGenerating || !vibe ? "#fdba74" : "#f97316", color: "#fff", fontWeight: 700, fontSize: 13, border: "none", cursor: aiGenerating || !vibe ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, transition: "all 0.2s" }}>
                   <Sparkles style={{ width: 16, height: 16, animation: aiGenerating ? "spin 2s linear infinite" : "none" }} />
-                  {aiGenerating ? "Generating magic..." : "✨ Auto-Write My Bio"}
+                  {aiGenerating ? "Generating magic..." : "Auto-Write My Bio"}
                 </button>
               </div>
 
@@ -372,15 +407,18 @@ export default function SecMatchProfilePage() {
           {step === 2 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", marginBottom: 24, display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ background: "#fff7ed", padding: "6px 8px", borderRadius: 8 }}>🏠</span> Accommodation Preferences
+                <div style={{ background: "#fff7ed", padding: "6px", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Home style={{ width: 16, height: 16, color: "#ea580c" }} />
+                </div>
+                Accommodation Preferences
               </h2>
 
               <div style={{ marginBottom: 20 }}>
                 <Input label="Looking for" required>
                   <div style={{ display: "flex", gap: 10 }}>
-                    <Pill value="PG" current={form.accommodationType} onChange={v => set("accommodationType", v)} label="🏠 PG" />
-                    <Pill value="Flat" current={form.accommodationType} onChange={v => set("accommodationType", v)} label="🏢 Flat" />
-                    <Pill value="Both" current={form.accommodationType} onChange={v => set("accommodationType", v)} label="🔄 Either" />
+                    <Pill value="PG" current={form.accommodationType} onChange={v => set("accommodationType", v)} label="PG" icon={Building} />
+                    <Pill value="Flat" current={form.accommodationType} onChange={v => set("accommodationType", v)} label="Flat" icon={Building2} />
+                    <Pill value="Both" current={form.accommodationType} onChange={v => set("accommodationType", v)} label="Either" icon={RefreshCcw} />
                   </div>
                 </Input>
               </div>
@@ -446,20 +484,23 @@ export default function SecMatchProfilePage() {
           {step === 3 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", marginBottom: 24, display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ background: "#fff7ed", padding: "6px 8px", borderRadius: 8 }}>🛋️</span> Lifestyle & Habits
+                <div style={{ background: "#fff7ed", padding: "6px", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Sofa style={{ width: 16, height: 16, color: "#ea580c" }} />
+                </div>
+                Lifestyle & Habits
               </h2>
 
               {[
-                { label: "Sleep Schedule", key: "sleepSchedule", options: [{ v: "early_bird", l: "🌅 Early Bird" }, { v: "flexible", l: "🌤 Flexible" }, { v: "night_owl", l: "🦉 Night Owl" }] },
-                { label: "Cooking Habits", key: "cookingHabits", options: [{ v: "never", l: "🍕 Never cook" }, { v: "sometimes", l: "🍳 Sometimes" }, { v: "always", l: "👨‍🍳 Always cook" }] },
-                { label: "Smoking Preference", key: "smokingPreference", options: [{ v: "non_smoker", l: "🚭 Non-smoker" }, { v: "smoker", l: "🚬 Smoker" }, { v: "doesnt_matter", l: "🤷 Doesn't matter" }] },
-                { label: "Drinking Preference", key: "drinkingPreference", options: [{ v: "non_drinker", l: "🧃 Non-drinker" }, { v: "social_drinker", l: "🍺 Social" }, { v: "doesnt_matter", l: "🤷 Doesn't matter" }] },
-                { label: "Guest Policy", key: "guestPolicy", options: [{ v: "no_guests", l: "🚫 No guests" }, { v: "occasional", l: "👋 Occasionally" }, { v: "frequent", l: "🎉 Frequently" }, { v: "doesnt_matter", l: "🤷 Doesn't matter" }] },
+                { label: "Sleep Schedule", key: "sleepSchedule", options: [{ v: "early_bird", l: "Early Bird", i: Sun }, { v: "flexible", l: "Flexible", i: CloudSun }, { v: "night_owl", l: "Night Owl", i: Moon }] },
+                { label: "Cooking Habits", key: "cookingHabits", options: [{ v: "never", l: "Never cook", i: Ban }, { v: "sometimes", l: "Sometimes", i: Utensils }, { v: "always", l: "Always cook", i: ChefHat }] },
+                { label: "Smoking Preference", key: "smokingPreference", options: [{ v: "non_smoker", l: "Non-smoker", i: Ban }, { v: "smoker", l: "Smoker", i: Flame }, { v: "doesnt_matter", l: "Doesn't matter", i: HelpCircle }] },
+                { label: "Drinking Preference", key: "drinkingPreference", options: [{ v: "non_drinker", l: "Non-drinker", i: Ban }, { v: "social_drinker", l: "Social", i: Wine }, { v: "doesnt_matter", l: "Doesn't matter", i: HelpCircle }] },
+                { label: "Guest Policy", key: "guestPolicy", options: [{ v: "no_guests", l: "No guests", i: Ban }, { v: "occasional", l: "Occasionally", i: Users }, { v: "frequent", l: "Frequently", i: PartyPopper }, { v: "doesnt_matter", l: "Doesn't matter", i: HelpCircle }] },
               ].map(({ label, key, options }) => (
                 <div key={key} style={{ marginBottom: 20 }}>
                   <label style={{ fontSize: 13, fontWeight: 600, color: "#374151", display: "block", marginBottom: 8 }}>{label} <span style={{ color: "#f97316" }}>*</span></label>
                   <div style={{ display: "flex", flexWrap: "wrap" as any, gap: 8 }}>
-                    {options.map(o => <Pill key={o.v} value={o.v} current={(form as any)[key]} onChange={v => set(key as keyof F, v)} label={o.l} />)}
+                    {options.map(o => <Pill key={o.v} value={o.v} current={(form as any)[key]} onChange={v => set(key as keyof F, v)} label={o.l} icon={o.i} />)}
                   </div>
                 </div>
               ))}
@@ -478,14 +519,13 @@ export default function SecMatchProfilePage() {
 
               {/* Toggles */}
               {([
-                { field: "workFromHome", label: "I work/study from home", icon: "💻" },
-                { field: "hasPets", label: "I have pets", icon: "🐾" },
-                { field: "petFriendly", label: "I'm okay living with pets", icon: "🐾" },
-              ] as const).map(({ field, label, icon }) => (
+                { field: "workFromHome", label: "I work/study from home" },
+                { field: "hasPets", label: "I have pets" },
+                { field: "petFriendly", label: "I'm okay living with pets" },
+              ] as const).map(({ field, label }) => (
                 <button key={field} type="button" onClick={() => set(field, !(form as any)[field])}
                   style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 12, border: `2px solid ${(form as any)[field] ? "#f97316" : "#e5e7eb"}`, background: (form as any)[field] ? "#fff7ed" : "#fff", cursor: "pointer", marginBottom: 10, transition: "all 0.15s" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 18 }}>{icon}</span>
                     <span style={{ fontSize: 13, fontWeight: 600, color: (form as any)[field] ? "#ea580c" : "#6b7280" }}>{label}</span>
                   </div>
                   <div style={{ width: 44, height: 24, borderRadius: 99, background: (form as any)[field] ? "#f97316" : "#e5e7eb", position: "relative", transition: "background 0.2s" }}>
@@ -500,17 +540,21 @@ export default function SecMatchProfilePage() {
           {step === 4 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ background: "#fff7ed", padding: "6px 8px", borderRadius: 8 }}>✨</span> Your Interests
+                <div style={{ background: "#fff7ed", padding: "6px", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Sparkles style={{ width: 16, height: 16, color: "#ea580c" }} />
+                </div>
+                Your Interests
               </h2>
               <p style={{ fontSize: 13, color: "#9ca3af", marginBottom: 24 }}>Select at least <strong style={{ color: "#f97316" }}>2</strong>. Our AI uses these to calculate perfect roommate compatibility!</p>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
                 {INTERESTS.map(it => {
                   const sel = form.interests.includes(it.id)
+                  const Icon = it.icon
                   return (
                     <button key={it.id} type="button" onClick={() => toggle(it.id)}
                       style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 12, border: `2px solid ${sel ? "#f97316" : "#e5e7eb"}`, background: sel ? "#fff7ed" : "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, color: sel ? "#ea580c" : "#6b7280", transition: "all 0.15s", transform: sel ? "scale(1.03)" : "scale(1)" }}>
-                      <span style={{ fontSize: 18 }}>{it.emoji}</span>
+                      <Icon style={{ width: 16, height: 16 }} />
                       {it.label}
                       {sel && <CheckCircle style={{ width: 12, height: 12, color: "#f97316", marginLeft: "auto" }} />}
                     </button>

@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       .sort({ createdAt: -1 })
       .limit(4)
       .select(
-        "name age gender college course year interests accommodationType preferredLocation budgetMin budgetMax bio sleepSchedule cleanlinessLevel cookingHabits createdAt"
+        "name age gender college course year interests accommodationType preferredLocation budgetMin budgetMax bio sleepSchedule cleanlinessLevel cookingHabits createdAt photo"
         // Explicitly NOT selecting: phone, userId, isSubscribed, subscriptionExpiry
       )
       .lean()
@@ -47,6 +47,7 @@ export async function GET(req: Request) {
       cleanlinessLevel: p.cleanlinessLevel,
       cookingHabits: p.cookingHabits,
       joinedAgo: getTimeAgo(p.createdAt),
+      image: p.photo,
     }))
 
     return NextResponse.json({ profiles: safe })

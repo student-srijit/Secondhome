@@ -78,20 +78,20 @@ export function AppDownloadBanner() {
               </div>
 
               {/* Input & Button */}
-              <div className="flex flex-col sm:flex-row max-w-lg mt-4">
+              <div className="flex flex-col sm:flex-row max-w-sm mt-4">
                 <div className="flex flex-1 items-center border border-gray-300 rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none bg-white overflow-hidden focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all">
                   <input 
                     type="email" 
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
                     placeholder="Enter Email address"
-                    className="flex-1 px-4 py-3 outline-none text-gray-800 placeholder:text-gray-400 w-full"
+                    className="flex-1 px-4 py-2.5 outline-none text-gray-800 placeholder:text-gray-400 w-full"
                   />
                 </div>
                 <Button 
                   onClick={handleSendLink}
                   disabled={isLoading}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-6 py-6 sm:rounded-l-none sm:rounded-r-lg rounded-b-lg sm:rounded-bl-none h-auto w-full sm:w-auto uppercase tracking-wide"
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-5 py-2.5 sm:rounded-l-none sm:rounded-r-lg rounded-b-lg sm:rounded-bl-none h-auto w-full sm:w-auto uppercase tracking-wide text-sm"
                 >
                   {isLoading ? "Sending..." : "Get App Link"}
                 </Button>

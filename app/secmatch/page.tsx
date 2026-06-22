@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Handshake, Shield, MessageCircle, Lock, Sparkles, Home, Building2,
   Crown, Target, Search, ArrowRight, CheckCircle, Star, Users,
-  MapPin, Zap, RefreshCw, Loader2, UserPlus
+  MapPin, Zap, RefreshCw, Loader2, UserPlus, User, Bot, Moon, ChefHat
 } from "lucide-react"
 import { useLanguage } from "@/providers/language-provider"
 
@@ -23,7 +23,7 @@ interface LiveProfile {
 interface LiveStats { value: string; label: string }
 
 // We will use translation keys inline inside the component for HOW_IT_WORKS and WHY_US
-const HOW_IT_WORKS_ICONS = ["👤", "🤖", "🤝"]
+const HOW_IT_WORKS_ICONS = [User, Bot, Handshake]
 const WHY_US_DATA = [
   { icon: Zap,           bg: "#fff7ed", ic: "#f97316", id: "ai" },
   { icon: Shield,        bg: "#f0fdf4", ic: "#22c55e", id: "safe" },
@@ -31,8 +31,8 @@ const WHY_US_DATA = [
   { icon: MessageCircle, bg: "#eff6ff", ic: "#3b82f6", id: "chat" },
 ]
 
-const SLEEP_LABELS: Record<string, string> = { early_bird: "🌅 Early Bird", night_owl: "🦉 Night Owl", flexible: "🌤 Flexible" }
-const COOK_LABELS:  Record<string, string> = { never: "🍕 Doesn't cook", sometimes: "🍳 Cooks sometimes", always: "👨‍🍳 Loves cooking" }
+const SLEEP_LABELS: Record<string, string> = { early_bird: "Early Bird", night_owl: "Night Owl", flexible: "Flexible" }
+const COOK_LABELS:  Record<string, string> = { never: "Doesn't cook", sometimes: "Cooks sometimes", always: "Loves cooking" }
 const AVATAR_COLORS = ["#f97316", "#ec4899", "#3b82f6", "#8b5cf6", "#22c55e", "#f59e0b"]
 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }
@@ -75,8 +75,12 @@ function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: numb
 
         {/* Coloured avatar header */}
         <div style={{ height: 112, background: `linear-gradient(135deg, ${color}25, ${color}55)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-          <div style={{ width: 78, height: 78, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, fontWeight: 900, color: "#fff", boxShadow: "0 4px 14px rgba(0,0,0,0.12)" }}>
-            {profile.name[0]}
+          <div style={{ width: 78, height: 78, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30, fontWeight: 900, color: "#fff", boxShadow: "0 4px 14px rgba(0,0,0,0.12)", overflow: "hidden", position: "relative" }}>
+            {(profile as any).image ? (
+              <img src={(profile as any).image} alt={profile.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              profile.name[0]
+            )}
           </div>
           <span style={{ position: "absolute", bottom: 10, right: 10, fontSize: 10, fontWeight: 600, color: "#9ca3af", background: "#fff", padding: "3px 8px", borderRadius: 99, border: "1px solid #e5e7eb" }}>
             {profile.joinedAgo}
@@ -115,8 +119,8 @@ function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: numb
           {/* Lifestyle chips */}
           {(profile.sleepSchedule || profile.cookingHabits) && (
             <div style={{ display: "flex", flexWrap: "wrap" as any, gap: 5, marginBottom: 10 }}>
-              {profile.sleepSchedule && <span style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", background: "#f9fafb", border: "1px solid #e5e7eb", padding: "3px 9px", borderRadius: 99 }}>{SLEEP_LABELS[profile.sleepSchedule]}</span>}
-              {profile.cookingHabits && <span style={{ fontSize: 10, fontWeight: 600, color: "#6b7280", background: "#f9fafb", border: "1px solid #e5e7eb", padding: "3px 9px", borderRadius: 99 }}>{COOK_LABELS[profile.cookingHabits]}</span>}
+              {profile.sleepSchedule && <span style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, color: "#6b7280", background: "#f9fafb", border: "1px solid #e5e7eb", padding: "3px 9px", borderRadius: 99 }}><Moon style={{ width: 10, height: 10 }} /> {SLEEP_LABELS[profile.sleepSchedule]}</span>}
+              {profile.cookingHabits && <span style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 10, fontWeight: 600, color: "#6b7280", background: "#f9fafb", border: "1px solid #e5e7eb", padding: "3px 9px", borderRadius: 99 }}><ChefHat style={{ width: 10, height: 10 }} /> {COOK_LABELS[profile.cookingHabits]}</span>}
             </div>
           )}
 
@@ -262,9 +266,14 @@ export default function SecMatchPage() {
                 <div className="h-full p-8 rounded-2xl border transition-all hover:shadow-lg hover:-translate-y-1"
                   style={{ background: "#ffffff", borderColor: "#e5e7eb" }}>
                   <div className="text-5xl font-black mb-5 select-none" style={{ color: "#fed7aa" }}>0{step}</div>
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-5" style={{ background: "#fff7ed" }}>{HOW_IT_WORKS_ICONS[i]}</div>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ background: "#fff7ed", color: "#f97316" }}>
+                    {(() => {
+                      const Icon = HOW_IT_WORKS_ICONS[i]
+                      return <Icon className="w-6 h-6" />
+                    })()}
+                  </div>
                   <h3 className="text-xl font-bold mb-3" style={{ color: "#111827" }}>{t(`secmatch.how.step${step}.title`)}</h3>
-                  <p className="leading-relaxed" style={{ color: "#6b7280" }}>{t(`secmatch.how.step${step}.body`)}</p>
+                  <p className="leading-relaxed" style={{ color: "#6b7280" }} dangerouslySetInnerHTML={{ __html: t(`secmatch.how.step${step}.body`) }} />
                 </div>
               </motion.div>
             ))}
@@ -320,7 +329,10 @@ export default function SecMatchPage() {
                 <button key={g} onClick={() => setActiveGender(g)}
                   className="px-7 py-2.5 rounded-lg font-semibold text-sm transition-all"
                   style={activeGender === g ? { background: "#f97316", color: "#fff", boxShadow: "0 2px 8px rgba(249,115,22,0.4)" } : { background: "transparent", color: "#6b7280" }}>
-                  {g === "male" ? "👦 " + t("secmatch.preview.boys").split(" ")[0] : "👧 " + t("secmatch.preview.girls").split(" ")[0]}
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>{t("secmatch.preview." + (g === "male" ? "boys" : "girls")).split(" ")[0]}</span>
+                  </div>
                 </button>
               ))}
             </div>
@@ -342,10 +354,10 @@ export default function SecMatchPage() {
                 <div style={{ fontSize: 48, marginBottom: 12 }}>🙌</div>
                 <p className="text-xl font-bold mb-2" style={{ color: "#111827" }}>{activeGender === "male" ? t("secmatch.preview.empty.title.male") : t("secmatch.preview.empty.title.female")}</p>
                 <p style={{ color: "#9ca3af", marginBottom: 20 }}>{t("secmatch.preview.empty.desc")}</p>
-                <Link href="/secmatch/profile">
+                <Link href={ctaHref}>
                   <button className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl text-white"
                     style={{ background: "#f97316" }}>
-                    {t("secmatch.cta.create")} <ArrowRight className="w-4 h-4" />
+                    {ctaLabel} <ArrowRight className="w-4 h-4" />
                   </button>
                 </Link>
               </div>
@@ -381,9 +393,7 @@ export default function SecMatchPage() {
             <h2 className="text-4xl md:text-5xl font-extrabold mb-3" style={{ color: "#111827" }}>
               {t("secmatch.pricing.title")}
             </h2>
-            <p className="text-lg" style={{ color: "#6b7280" }}>
-              {t("secmatch.pricing.subtitle")}
-            </p>
+            <p className="text-lg" style={{ color: "#6b7280" }} dangerouslySetInnerHTML={{ __html: t("secmatch.pricing.subtitle") }} />
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -422,10 +432,11 @@ export default function SecMatchPage() {
               </div>
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#ea580c" }}>{t("secmatch.pricing.pro.title")}</p>
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-5xl font-black" style={{ color: "#111827" }}>{t("secmatch.pricing.pro.price")}</span>
-                <span className="text-sm" style={{ color: "#9ca3af" }}>{t("secmatch.pricing.pro.period")}</span>
+                <span className="text-2xl font-bold text-gray-400 line-through">₹25</span>
+                <span className="text-5xl font-black" style={{ color: "#111827" }}>Free</span>
+                <span className="text-sm" style={{ color: "#9ca3af" }}>/forever</span>
               </div>
-              <p className="text-sm mb-8" style={{ color: "#9ca3af" }}>{t("secmatch.pricing.pro.desc")}</p>
+              <p className="text-sm mb-8" style={{ color: "#9ca3af" }}>Unlock everything for ₹0 — our launch special.</p>
               <ul className="space-y-3 mb-8">
                 {[t("secmatch.pricing.pro.feat1"), t("secmatch.pricing.pro.feat2"), t("secmatch.pricing.pro.feat3"), t("secmatch.pricing.pro.feat4"), t("secmatch.pricing.pro.feat5"), t("secmatch.pricing.pro.feat6")].map(f => (
                   <li key={f} className="flex items-center gap-3 text-sm" style={{ color: "#374151" }}>

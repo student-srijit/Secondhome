@@ -35,6 +35,8 @@ import { useAuth } from "@/hooks/use-auth"
 import { motion } from "framer-motion"
 import { PaymentModal } from "@/components/payment-modal"
 import { ScheduleVisitModal } from "@/components/schedule-visit-modal"
+import { EmailInquiryModal } from "@/components/email-inquiry-modal"
+import { ImageLightbox } from "@/components/image-lightbox"
 import { LikeButton } from "@/components/like-button"
 import { ShareModal } from "@/components/share-modal"
 import { ReviewForm } from "@/components/review-form"
@@ -48,12 +50,13 @@ interface Property {
   _id: string
   title: string
   description: string
-  location: string
+  location: any
   address: string
   rating: number
   reviews: number
   price: number
   deposit: number
+  feeStructure?: string
   images: string[]
   amenities: string[]
   type: string
@@ -96,6 +99,15 @@ const formatDateTimeLocal = (date: Date) => {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+const renderFeeStructure = (text: string) => {
+  if (!text) return null;
+  return (
+    <div className="text-sm text-gray-700 mt-4 p-4 bg-gradient-to-br from-orange-50/50 to-amber-50/50 rounded-xl border border-orange-100/50 leading-relaxed text-left shadow-sm whitespace-pre-wrap">
+      {text}
+    </div>
+  );
+};
+
 const getDefaultCheckInDateTime = () => {
   const date = new Date()
   date.setDate(date.getDate() + 1)
@@ -132,6 +144,8 @@ export default function ListingDetailPage() {
   const [selectedKit, setSelectedKit] = useState<SettlingInKit | null>(null)
   const [checkInDateTime, setCheckInDateTime] = useState<string>(getDefaultCheckInDateTime())
   const [bookingTotal, setBookingTotal] = useState<number | null>(null)
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   const handleBookNow = async () => {
     if (!user) {
@@ -171,6 +185,8 @@ export default function ListingDetailPage() {
     const commissionRate = 7.5
 
     try {
+      // Temporarily commenting out booking and payment window to instead send an email inquiry
+      /*
       // Create a booking
       const response = await fetch("/api/bookings", {
         method: "POST",
@@ -201,6 +217,9 @@ export default function ListingDetailPage() {
       setCurrentBookingId(data._id)
       setBookingTotal(data.totalAmount ?? null)
       setIsPaymentModalOpen(true)
+      */
+
+      setIsEmailModalOpen(true)
     } catch (error) {
       console.error("Error creating booking:", error)
       toast({
@@ -222,7 +241,7 @@ export default function ListingDetailPage() {
         const data = await res.json()
         // API returns { success: true, property: {...} }
         setProperty(data.property || data)
-        
+
         // Track property view and create notification (silently, don't block on error)
         if (user?.id && params.id) {
           fetch(`/api/properties/${params.id}/view`, {
@@ -277,26 +296,31 @@ export default function ListingDetailPage() {
     )
   }
 
-  const commissionRate = 7.5
-  const baseRent = property.price || 0
-  const estimatedCommission = Math.round((baseRent * commissionRate) / 100)
   const kitPrice = selectedKit?.price || 0
-  const estimatedTotal = baseRent + estimatedCommission + kitPrice
+  const estimatedTotal = kitPrice
   const deliveryPromiseCopy = getDeliveryPromiseCopy(t, checkInDateTime)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
       {/* Hero Image Gallery */}
       <div className="relative h-[60vh] md:h-[70vh] w-full bg-gradient-to-b from-black/20 to-black/5">
-        <div className="absolute inset-0">
+        <div
+          className="absolute inset-0 cursor-pointer group"
+          onClick={() => setIsLightboxOpen(true)}
+        >
           <Image
             src={(property.images && property.images.length > 0) ? (property.images[activeImageIndex] || property.images[0]) : "/placeholder.jpg"}
             alt={property.title}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10 flex items-center justify-center">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 text-white px-6 py-3 rounded-full backdrop-blur-md flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0">
+              <span className="font-medium tracking-wide">Click to expand gallery</span>
+            </div>
+          </div>
         </div>
 
         {/* Actions */}
@@ -310,9 +334,9 @@ export default function ListingDetailPage() {
             <Share className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm shadow-lg rounded-full px-2 py-1">
-            <LikeButton 
-              itemType="property" 
-              itemId={property._id} 
+            <LikeButton
+              itemType="property"
+              itemId={property._id}
               size="md"
               className="p-0 bg-transparent shadow-none backdrop-blur-none"
             />
@@ -346,11 +370,10 @@ export default function ListingDetailPage() {
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                    idx === activeImageIndex
+                  className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${idx === activeImageIndex
                       ? "border-white shadow-lg scale-110"
                       : "border-white/50 hover:border-white"
-                  }`}
+                    }`}
                 >
                   <Image src={img} alt={`View ${idx + 1}`} fill className="object-cover" />
                 </button>
@@ -424,7 +447,7 @@ export default function ListingDetailPage() {
                     </Badge>
                   </div>
                 </div>
-                </div>
+              </div>
 
               <div className="border-t pt-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-3">{t("listing.detail.about")}</h2>
@@ -450,7 +473,7 @@ export default function ListingDetailPage() {
                       <span className="text-gray-800 font-medium">{amenity}</span>
                     </div>
                   ))}
-                        </div>
+                </div>
               ) : (
                 <p className="text-gray-500">{t("listing.detail.noAmenities")}</p>
               )}
@@ -464,7 +487,7 @@ export default function ListingDetailPage() {
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100"
               >
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("listing.detail.roomOptions")}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("listing.detail.roomOptions")}</h2>
                 <div className="space-y-4">
                   {property.roomTypes.map((room, idx) => (
                     <div
@@ -488,7 +511,7 @@ export default function ListingDetailPage() {
                       </div>
                     </div>
                   ))}
-                      </div>
+                </div>
               </motion.div>
             )}
 
@@ -500,7 +523,7 @@ export default function ListingDetailPage() {
                 transition={{ delay: 0.3 }}
                 className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100"
               >
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("listing.detail.houseRules")}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("listing.detail.houseRules")}</h2>
                 <div className="space-y-3">
                   {property.rules.map((rule, idx) => (
                     <div key={idx} className="flex items-start gap-3">
@@ -510,7 +533,7 @@ export default function ListingDetailPage() {
                       <p className="text-gray-700">{rule}</p>
                     </div>
                   ))}
-                      </div>
+                </div>
               </motion.div>
             )}
 
@@ -569,33 +592,40 @@ export default function ListingDetailPage() {
               className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100"
             >
               <h2 className="text-2xl font-bold text-gray-900 mb-6">{t("reviews.title")}</h2>
-              <ReviewsList itemType="property" itemId={property._id} onRatingChange={(r) => {}} />
+              <ReviewsList itemType="property" itemId={property._id} onRatingChange={(r) => { }} />
               <div className="mt-8">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">{t("reviews.writeTitle")}</h3>
-                <ReviewForm itemType="property" itemId={property._id} onSuccess={() => {}} />
-                  </div>
+                <ReviewForm itemType="property" itemId={property._id} onSuccess={() => { }} />
+              </div>
             </motion.div>
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
               className="sticky top-20 lg:top-24 space-y-6"
             >
               {/* Price Card */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
                 <div className="text-center mb-6">
-                  <div className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 mb-2">
-                    <span className="text-sm font-semibold text-orange-700">{t("listing.detail.startingFrom")}</span>
+                  <div className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-amber-100 mb-3 shadow-sm border border-orange-200/50">
+                    <span className="text-sm font-semibold text-orange-800">{t("listing.detail.startingFrom")}</span>
                   </div>
-                  <div className="text-4xl font-bold text-gray-900 mb-2">₹{property.price}</div>
-                  <p className="text-gray-500">{t("listing.detail.perMonth")}</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    + ₹{property.deposit} {t("listing.detail.securityDeposit")}
-                  </p>
+                  <div className="flex items-end justify-center gap-1">
+                    <span className="text-4xl font-bold text-gray-900 tracking-tight">₹{property.price}</span>
+                    <span className="text-gray-500 font-medium mb-1">/{t("listing.detail.perMonth") || "mo"}</span>
+                  </div>
+
+                  {property.feeStructure ? (
+                    renderFeeStructure(property.feeStructure)
+                  ) : property.deposit ? (
+                    <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100 text-sm text-gray-600">
+                      + <strong className="text-gray-900 font-bold">₹{property.deposit}</strong> {t("listing.detail.securityDeposit")}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="space-y-3 mb-6">
@@ -612,16 +642,16 @@ export default function ListingDetailPage() {
                           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                           className="mr-2 h-5 w-5 border-2 border-white border-t-transparent rounded-full"
                         />
-                          {t("listing.detail.creatingBooking")}
+                        {t("listing.detail.creatingBooking")}
                       </>
                     ) : (
                       <>
                         <Calendar className="mr-2 h-5 w-5" />
-                          {t("listing.detail.bookNow")}
+                        {t("listing.detail.bookNow")}
                       </>
                     )}
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     size="lg"
@@ -631,13 +661,13 @@ export default function ListingDetailPage() {
                     <Calendar className="mr-2 h-5 w-5" />
                     {t("listing.detail.scheduleVisitWhatsapp")}
                   </Button>
-                  </div>
+                </div>
 
                 {property.owner && (
                   <div className="border-t pt-6">
-                    <h3 className="font-bold text-gray-900 mb-4">{t("listing.detail.contactOwner")}</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                    <h3 className="font-bold text-gray-900 mb-4">Owner Details</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white font-bold">
                           {property.owner.name?.charAt(0) || "O"}
                         </div>
@@ -647,37 +677,36 @@ export default function ListingDetailPage() {
                         </div>
                       </div>
 
-                      {property.owner.phone && (
-                        <>
-                          <WhatsAppChatButton
-                            propertyId={property._id}
-                            propertyTitle={property.title}
-                            ownerPhone={property.owner.phone}
-                            ownerName={property.owner.name}
-                            variant="outline"
-                            size="default"
-                            label={t("listing.detail.chatOnWhatsapp")}
-                            className="w-full"
-                          />
-                          <Button variant="outline" className="w-full justify-start" asChild>
-                            <a href={`tel:${property.owner.phone}`}>
-                              <Phone className="mr-2 h-4 w-4" />
-                              {property.owner.phone}
-                            </a>
-                          </Button>
-                        </>
-                      )}
-                      
-                      {property.owner.email && (
-                        <Button variant="outline" className="w-full justify-start" asChild>
-                          <a href={`mailto:${property.owner.email}`}>
-                            <Mail className="mr-2 h-4 w-4" />
-                            {t("listing.detail.contactViaEmail")}
-                          </a>
-                                    </Button>
-                      )}
+                      <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3">
+                        <h4 className="text-sm font-semibold text-gray-900">Contact Information</h4>
+                        {property.owner.phone && (
+                          <div className="flex items-center gap-3 text-sm text-gray-700">
+                            <Phone className="w-4 h-4 text-primary" />
+                            <span>{property.owner.phone}</span>
                           </div>
-                        </div>
+                        )}
+                        {property.owner.email && (
+                          <div className="flex items-center gap-3 text-sm text-gray-700">
+                            <Mail className="w-4 h-4 text-primary" />
+                            <span className="break-all">{property.owner.email}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {property.owner.phone && (
+                        <WhatsAppChatButton
+                          propertyId={property._id}
+                          propertyTitle={property.title}
+                          ownerPhone={property.owner.phone}
+                          ownerName={property.owner.name}
+                          variant="outline"
+                          size="default"
+                          label={t("listing.detail.chatOnWhatsapp")}
+                          className="w-full"
+                        />
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -685,12 +714,12 @@ export default function ListingDetailPage() {
               <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-bold text-gray-900">{t("listing.detail.dayZeroKitTitle")}</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                      <h3 className="font-bold text-gray-900">{t("listing.detail.dayZeroKitTitle")}</h3>
+                      <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200 w-fit">Not Available Right Now</Badge>
+                    </div>
                     <p className="text-sm text-gray-600">{deliveryPromiseCopy}</p>
                   </div>
-                  <Badge variant="secondary" className="bg-orange-100 text-orange-700 border-orange-200">
-                    {t("listing.detail.day0")}
-                  </Badge>
                 </div>
 
                 <div className="space-y-2">
@@ -710,36 +739,34 @@ export default function ListingDetailPage() {
                 />
 
                 <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>{t("listing.detail.firstMonthRent")}</span>
-                    <span className="font-semibold">₹{baseRent.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>
-                      {t("listing.detail.commission")} ({commissionRate}%)
-                    </span>
-                    <span className="font-semibold">₹{estimatedCommission.toLocaleString()}</span>
-                  </div>
-                  {selectedKit && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span>{selectedKit.packageName}</span>
-                      <span className="font-semibold">₹{kitPrice.toLocaleString()}</span>
+                  {selectedKit ? (
+                    <>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>{selectedKit.packageName}</span>
+                        <span className="font-semibold">₹{kitPrice.toLocaleString()}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-sm text-gray-500 text-center py-2">
+                      Please select an addon kit above
                     </div>
                   )}
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>{t("listing.detail.securityDepositPaidSeparately")}</span>
-                    <span>
-                      ₹
-                      {typeof property.deposit === "number"
-                        ? property.deposit.toLocaleString()
-                        : property.deposit || "-"}
-                    </span>
-                  </div>
                   <div className="pt-2 border-t border-gray-200 flex items-center justify-between font-semibold">
-                    <span>{t("listing.detail.estimatedTotalExclDeposit")}</span>
+                    <span>Total Addon Cost</span>
                     <span className="text-primary font-semibold">₹{estimatedTotal.toLocaleString()}</span>
                   </div>
                 </div>
+
+                <Button
+                  className="w-full bg-gradient-to-r from-primary to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold rounded-xl shadow-md transition-all mt-4 opacity-50 cursor-not-allowed"
+                  onClick={() => {
+                    setBookingTotal(estimatedTotal)
+                    setIsPaymentModalOpen(true)
+                  }}
+                  disabled={true}
+                >
+                  Purchase Addon
+                </Button>
               </div>
 
               {/* Quick Info */}
@@ -787,9 +814,9 @@ export default function ListingDetailPage() {
                 </div>
               )}
             </motion.div>
-                </div>
-              </div>
-            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Modals */}
       {property && (
@@ -800,7 +827,7 @@ export default function ListingDetailPage() {
             bookingId={currentBookingId || ""}
             amount={bookingTotal ?? estimatedTotal}
             propertyName={property.title}
-            propertyOwnerId={property.owner?._id || property.owner}
+            propertyOwnerId={typeof property.owner === "string" ? property.owner : property.owner?._id}
           />
           <ScheduleVisitModal
             isOpen={isScheduleVisitModalOpen}
@@ -814,6 +841,20 @@ export default function ListingDetailPage() {
             url={typeof window !== "undefined" ? window.location.href : ""}
             title={property.title}
           />
+          <EmailInquiryModal
+            isOpen={isEmailModalOpen}
+            onClose={() => setIsEmailModalOpen(false)}
+            propertyName={property.title}
+            ownerEmail={property.owner?.email}
+          />
+          {property.images && property.images.length > 0 && (
+            <ImageLightbox
+              images={property.images}
+              initialIndex={activeImageIndex}
+              isOpen={isLightboxOpen}
+              onClose={() => setIsLightboxOpen(false)}
+            />
+          )}
         </>
       )}
     </div>

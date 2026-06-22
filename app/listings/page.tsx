@@ -18,7 +18,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useLanguage } from "@/providers/language-provider"
 import {
-  MapPin, Star, Filter, Loader2, SlidersHorizontal, X, Bed, Bath, Users, Eye, TrendingUp, Heart, 
+  MapPin, Star, Filter, Loader2, SlidersHorizontal, X, Bed, Bath, Users, Eye, TrendingUp, Heart,
   Search, IndianRupee, Wifi, Car, Home, Shield, Sparkles, ChevronDown, Grid3x3, List, Map as MapIcon,
   CheckCircle2, Award, Zap, Building2
 } from "lucide-react"
@@ -43,7 +43,7 @@ const PropertyCardSkeleton = () => (
 const EmptyState = ({ onReset }: { onReset: () => void }) => {
   const { t } = useLanguage()
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="col-span-full flex flex-col items-center justify-center py-20"
@@ -60,7 +60,7 @@ export default function ListingsPage() {
   const { data: session } = useSession()
   const { toast } = useToast()
   const [forceUpdate, setForceUpdate] = useState(0)
-  
+
   // State Management
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [sortBy, setSortBy] = useState("recent")
@@ -69,7 +69,7 @@ export default function ListingsPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "")
   const [userFavorites, setUserFavorites] = useState<string[]>([])
-  
+
   const [filters, setFilters] = useState({
     priceRange: [0, 100000] as [number, number],
     propertyTypes: [] as string[],
@@ -309,7 +309,7 @@ export default function ListingsPage() {
   }
 
   // Active filters count
-  const activeFiltersCount = 
+  const activeFiltersCount =
     filters.propertyTypes.length +
     filters.genders.length +
     filters.amenities.length +
@@ -328,7 +328,7 @@ export default function ListingsPage() {
       {/* Hero Search Section */}
       <div className="relative text-white overflow-hidden min-h-[600px] md:min-h-[700px]">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: 'url(/secondhome_pgflat.png)',
@@ -340,7 +340,7 @@ export default function ListingsPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-orange-600/30 via-orange-500/25 to-orange-700/35" />
         {/* Additional subtle overlay for depth */}
         <div className="absolute inset-0 bg-black/10" />
-        
+
         {/* Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {/* Floating circles */}
@@ -348,9 +348,9 @@ export default function ListingsPage() {
           <div className="absolute bottom-32 right-20 w-40 h-40 bg-orange-400/10 rounded-full blur-3xl animate-pulse delay-1000" />
           <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-white/5 rounded-full blur-xl" />
         </div>
-        
+
         <div className="relative container mx-auto px-4 py-12 md:py-20">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="max-w-5xl mx-auto text-center mb-10"
@@ -371,8 +371,8 @@ export default function ListingsPage() {
                 {t("home.heroTitle")}
               </span>
             </h1>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -380,8 +380,8 @@ export default function ListingsPage() {
             >
               {filteredAndSortedListings.length} {filteredAndSortedListings.length === 1 ? t("listings.property.singular") : t("listings.property.plural")} {t("listings.available")}
             </motion.p>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -406,8 +406,8 @@ export default function ListingsPage() {
                   className="border-none focus-visible:ring-0 text-gray-900 placeholder:text-gray-500 text-base"
                 />
               </div>
-              <Button 
-                onClick={() => {/* Search logic */}}
+              <Button
+                onClick={() => {/* Search logic */ }}
                 className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-8 py-6 text-base font-semibold shadow-lg"
               >
                 {t("nav.search")}
@@ -416,7 +416,7 @@ export default function ListingsPage() {
           </motion.div>
 
           {/* Quick Filters - ALL property types from schema */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -437,8 +437,8 @@ export default function ListingsPage() {
                         : [...prev.propertyTypes, type]
                     }))
                   }}
-                  className={filters.propertyTypes.includes(type) 
-                    ? "bg-white text-orange-600 hover:bg-white/90 shadow-lg backdrop-blur-sm border-2 border-white" 
+                  className={filters.propertyTypes.includes(type)
+                    ? "bg-white text-orange-600 hover:bg-white/90 shadow-lg backdrop-blur-sm border-2 border-white"
                     : "bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border border-white/30 shadow-md"
                   }
                 >
@@ -727,10 +727,10 @@ export default function ListingsPage() {
               className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}
             >
               {filteredAndSortedListings.map((property, index) => (
-                <PropertyCard 
-                  key={property._id} 
-                  property={property} 
-                  index={index} 
+                <PropertyCard
+                  key={property._id}
+                  property={property}
+                  index={index}
                   viewMode={viewMode}
                   isFavorited={userFavorites.includes(property._id)}
                   onToggleFavorite={toggleFavorite}
@@ -742,7 +742,7 @@ export default function ListingsPage() {
 
         {/* Results Summary */}
         {!loading && filteredAndSortedListings.length > 0 && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="mt-8 text-center text-gray-600"
@@ -756,15 +756,15 @@ export default function ListingsPage() {
 }
 
 // Property Card Component
-function PropertyCard({ 
-  property, 
-  index, 
+function PropertyCard({
+  property,
+  index,
   viewMode,
   isFavorited,
   onToggleFavorite
-}: { 
-  property: any; 
-  index: number; 
+}: {
+  property: any;
+  index: number;
   viewMode: "grid" | "list";
   isFavorited: boolean;
   onToggleFavorite: (propertyId: string) => void;
@@ -905,7 +905,7 @@ function PropertyCard({
             </div>
           )}
 
-          <Button 
+          <Button
             onClick={() => router.push(`/listings/${property._id}`)}
             className="w-full bg-orange-500 hover:bg-orange-600 group-hover:bg-orange-600"
           >

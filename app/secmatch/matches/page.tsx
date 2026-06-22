@@ -8,11 +8,12 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Handshake, X, MessageCircle, Crown, RefreshCw, ChevronLeft,
   Home, Building2, MapPin, CheckCircle, Target, Zap, Lock,
-  Star, ArrowRight, Phone, IndianRupee, Sparkles, UserPlus, BrainCircuit
+  Star, ArrowRight, Phone, IndianRupee, Sparkles, UserPlus, BrainCircuit,
+  Search, Moon, ChefHat
 } from "lucide-react"
 
-const SLEEP: Record<string, string> = { early_bird: "🌅 Early Bird", night_owl: "🦉 Night Owl", flexible: "🌤 Flexible" }
-const COOK: Record<string, string> = { never: "🍕 Never cooks", sometimes: "🍳 Sometimes", always: "👨‍🍳 Always cooks" }
+const SLEEP: Record<string, string> = { early_bird: "Early Bird", night_owl: "Night Owl", flexible: "Flexible" }
+const COOK: Record<string, string> = { never: "Never cooks", sometimes: "Sometimes", always: "Always cooks" }
 
 function scoreBg(s: number) { return s >= 85 ? "#22c55e" : s >= 70 ? "#f59e0b" : s >= 55 ? "#f97316" : "#9ca3af" }
 function scoreLabel(s: number) { return s >= 85 ? "Excellent" : s >= 70 ? "Great Match" : s >= 55 ? "Good Match" : "Possible Match" }
@@ -25,15 +26,15 @@ function AIAnalysisModal({ match, onClose }: { match: any; onClose: () => void }
   useEffect(() => {
     let t = `Analyzing compatibility...\n`
     if (match.sharedInterests?.length > 0) {
-      t += `\n🧠 Strong synergy detected! You both share an interest in ${match.sharedInterests.join(", ")}. `
+      t += `\nStrong synergy detected! You both share an interest in ${match.sharedInterests.join(", ")}. `
     }
     if (match.compatibilityScore >= 80) {
-      t += `\n🔥 Extremely high lifestyle match! Your preferences for budget and location align perfectly. `
+      t += `\nExtremely high lifestyle match! Your preferences for budget and location align perfectly. `
     }
     if (match.sleepSchedule) {
-      t += `\n💤 Roommate dynamic: They are a ${SLEEP[match.sleepSchedule].split(" ")[1]} which should fit your schedule.`
+      t += `\nRoommate dynamic: They are a ${SLEEP[match.sleepSchedule]} which should fit your schedule.`
     }
-    t += `\n\n✨ Verdict: ${scoreLabel(match.compatibilityScore)}!`
+    t += `\n\nVerdict: ${scoreLabel(match.compatibilityScore)}!`
 
     let i = 0
     const interval = setInterval(() => {
@@ -84,71 +85,38 @@ function AIAnalysisModal({ match, onClose }: { match: any; onClose: () => void }
 // ─── Subscription Modal ─────────────────────────────────────────────────────
 function SubModal({ onClose, onPay, busy }: { onClose: () => void; onPay: (m: string) => void; busy: boolean }) {
   const [step, setStep] = useState<"choose" | "upi">("choose")
-  const [upi, setUpi] = useState("")
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}>
       <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
         style={{ width: "100%", maxWidth: 420, background: "#ffffff", borderRadius: 24, overflow: "hidden", boxShadow: "0 25px 60px rgba(0,0,0,0.2)" }}>
-        <div style={{ background: "linear-gradient(135deg, #f97316, #ea580c)", padding: "28px 24px", textAlign: "center", position: "relative" }}>
+        <div style={{ background: "linear-gradient(135deg, #f97316, #ea580c)", padding: "32px 24px", color: "#fff", textAlign: "center" }}>
           <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 30, height: 30, borderRadius: "50%", background: "rgba(255,255,255,0.2)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <X style={{ width: 16, height: 16, color: "#fff" }} />
           </button>
-          <div style={{ width: 52, height: 52, background: "#fff", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
-            <Crown style={{ width: 26, height: 26, color: "#f97316" }} />
+          <div style={{ width: 64, height: 64, background: "rgba(255,255,255,0.2)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+            <Crown style={{ width: 32, height: 32, color: "#fff" }} />
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 4px" }}>SecMatch Pro</h2>
+          <h2 style={{ fontSize: 26, fontWeight: 900, margin: "0 0 6px" }}>SecMatch Pro</h2>
           <p style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", margin: "0 0 10px" }}>Chat with roommates & share contacts</p>
-          <div style={{ fontSize: 40, fontWeight: 900, color: "#fff" }}>₹25<span style={{ fontSize: 15, fontWeight: 400, opacity: 0.8 }}>/month</span></div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <div style={{ fontSize: 24, fontWeight: 600, color: "rgba(255,255,255,0.6)", textDecoration: "line-through" }}>₹25</div>
+            <div style={{ fontSize: 40, fontWeight: 900, color: "#fff" }}>Free<span style={{ fontSize: 15, fontWeight: 400, opacity: 0.8 }}>/forever</span></div>
+          </div>
         </div>
 
         <div style={{ padding: 24 }}>
-          {step === "choose" && (
-            <>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 20px", display: "flex", flexDirection: "column", gap: 10 }}>
-                {["Unlimited connection requests", "Chat with all your roommates", "Phone numbers after mutual approval", "See who connected with you", "Priority recommendations"].map(f => (
-                  <li key={f} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#374151" }}>
-                    <CheckCircle style={{ width: 16, height: 16, color: "#22c55e", flexShrink: 0 }} />{f}
-                  </li>
-                ))}
-              </ul>
-              <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center", marginBottom: 12 }}>Choose payment method</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {[{ id: "upi", label: "💳 Pay via UPI", sub: "Google Pay, PhonePe, Paytm" }, { id: "demo", label: "🎁 Demo Mode", sub: "Activate instantly for testing" }].map(m => (
-                  <button key={m.id} onClick={() => m.id === "demo" ? onPay("demo") : setStep("upi")}
-                    style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 14, border: "2px solid #e5e7eb", background: "#fff", cursor: "pointer", transition: "border-color 0.15s", textAlign: "left" }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = "#f97316")} onMouseLeave={e => (e.currentTarget.style.borderColor = "#e5e7eb")}>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{m.label}</div>
-                      <div style={{ fontSize: 11, color: "#9ca3af" }}>{m.sub}</div>
-                    </div>
-                    <ArrowRight style={{ width: 16, height: 16, color: "#9ca3af" }} />
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {step === "upi" && (
-            <>
-              <p style={{ fontSize: 13, color: "#6b7280", textAlign: "center", marginBottom: 16 }}>Scan & pay ₹25, then enter your transaction ID</p>
-              <div style={{ width: 140, height: 140, borderRadius: 16, border: "2px solid #e5e7eb", background: "#f9fafb", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, padding: 10, width: "100%", height: "100%" }}>
-                  {Array(49).fill(0).map((_, i) => <div key={i} style={{ borderRadius: 2, background: [0,1,2,3,4,5,6,7,14,21,28,35,42,43,44,45,46,47,48,8,15,22,29,36,10,11,12,17,24,25,26,31,38,39,40].includes(i) ? "#111" : "#fff" }} />)}
-                </div>
-                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <div style={{ width: 32, height: 32, background: "#f97316", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Crown style={{ width: 16, height: 16, color: "#fff" }} />
-                  </div>
-                </div>
-              </div>
-              <p style={{ textAlign: "center", fontSize: 12, color: "#9ca3af", marginBottom: 16 }}>UPI ID: <strong style={{ color: "#374151" }}>secmatch@sbi</strong></p>
-              <input value={upi} onChange={e => setUpi(e.target.value)} placeholder="Enter UPI Transaction ID" style={{ width: "100%", padding: "12px 14px", borderRadius: 12, border: "2px solid #e5e7eb", background: "#fff", color: "#111827", fontSize: 13, outline: "none", marginBottom: 12, boxSizing: "border-box" as any }} onFocus={e => (e.target.style.borderColor = "#f97316")} onBlur={e => (e.target.style.borderColor = "#e5e7eb")} />
-              <button onClick={() => onPay(`upi:${upi}`)} disabled={!upi || busy}
-                style={{ width: "100%", padding: "14px", borderRadius: 14, background: !upi || busy ? "#fdba74" : "#f97316", color: "#fff", fontWeight: 700, fontSize: 14, border: "none", cursor: !upi || busy ? "not-allowed" : "pointer" }}>
-                {busy ? "Activating..." : "✅ I've Paid — Activate Pro"}
-              </button>
-            </>
-          )}
+          <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 12 }}>
+            {["Unlimited connection requests", "Chat with all your roommates", "Phone numbers after mutual approval", "See who connected with you", "Priority recommendations"].map(f => (
+              <li key={f} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#374151" }}>
+                <CheckCircle style={{ width: 16, height: 16, color: "#22c55e", flexShrink: 0 }} />{f}
+              </li>
+            ))}
+          </ul>
+          
+          <button onClick={() => onPay("demo")} disabled={busy}
+            style={{ width: "100%", padding: "14px", borderRadius: 14, background: busy ? "#fdba74" : "#f97316", color: "#fff", fontWeight: 700, fontSize: 14, border: "none", cursor: busy ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <Crown style={{ width: 18, height: 18 }} /> {busy ? "Activating..." : "Unlock Pro for Free"}
+          </button>
         </div>
       </motion.div>
     </div>
@@ -186,8 +154,12 @@ function MatchModal({ match, onClose, subscribed, onSub }: { match: any; onClose
           </p>
         </div>
         <div style={{ padding: "24px" }}>
-          <div style={{ width: 72, height: 72, background: "#f97316", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, color: "#fff", margin: "-60px auto 20px", border: "4px solid #fff", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-            {match?.name?.[0]}
+          <div style={{ width: 72, height: 72, background: "#f97316", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, color: "#fff", margin: "-60px auto 20px", border: "4px solid #fff", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", overflow: "hidden", position: "relative" }}>
+            {match?.image ? (
+              <img src={match.image} alt={match.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              match?.name?.[0]
+            )}
           </div>
           
           {subscribed ? (
@@ -238,6 +210,25 @@ function MatchModal({ match, onClose, subscribed, onSub }: { match: any; onClose
 }
 function Bot(props: any) { return <Sparkles {...props} /> } // placeholder fallback
 
+// ─── Pass Confirm Modal ───────────────────────────────────────────────────────
+function PassConfirmModal({ match, onClose, onConfirm }: { match: any; onClose: () => void; onConfirm: () => void }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }}>
+      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+        style={{ width: "100%", maxWidth: 320, background: "#ffffff", borderRadius: 24, padding: "32px 24px", textAlign: "center", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+        <h3 style={{ fontSize: 20, fontWeight: 800, color: "#111827", margin: "0 0 10px" }}>Pass on {match.name}?</h3>
+        <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 28px", lineHeight: 1.5 }}>
+          Are you sure? This profile will be permanently removed from your roommate suggestions.
+        </p>
+        <div style={{ display: "flex", gap: 12 }}>
+          <button onClick={onClose} style={{ flex: 1, padding: "14px", borderRadius: 14, background: "#f3f4f6", color: "#374151", fontWeight: 700, fontSize: 15, border: "none", cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background="#e5e7eb"} onMouseLeave={e => e.currentTarget.style.background="#f3f4f6"}>Cancel</button>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "14px", borderRadius: 14, background: "#ef4444", color: "#fff", fontWeight: 700, fontSize: 15, border: "none", cursor: "pointer", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background="#dc2626"} onMouseLeave={e => e.currentTarget.style.background="#ef4444"}>Pass</button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 // ─── Main Page ───────────────────────────────────────────────────────────────
 export default function SecMatchMatchesPage() {
   const router = useRouter()
@@ -252,6 +243,7 @@ export default function SecMatchMatchesPage() {
   const [mutualMatch, setMutualMatch] = useState<any>(null)
   const [showMatch, setShowMatch] = useState(false)
   const [showAI, setShowAI] = useState(false)
+  const [showPassConfirm, setShowPassConfirm] = useState<any>(null)
   const [acting, setActing] = useState(false)
   const [liked, setLiked] = useState(0)
   const [tab, setTab] = useState<"discover" | "mutual">("discover")
@@ -272,9 +264,16 @@ export default function SecMatchMatchesPage() {
     if (status === "authenticated") load()
   }, [status, load])
 
-  const act = async (action: "like" | "pass") => {
-    if (acting || idx >= matches.length) return
+  const act = async (action: "like" | "pass", skipConfirm = false) => {
+    if (acting) return
     const m = matches[idx]
+    if (!m) return
+
+    if (action === "pass" && !skipConfirm) {
+      setShowPassConfirm(m)
+      return
+    }
+
     setActing(true)
     try {
       const r = await fetch("/api/secmatch/like", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ toUserId: m.userId, action }) })
@@ -322,6 +321,7 @@ export default function SecMatchMatchesPage() {
       {showSub && <SubModal onClose={() => setShowSub(false)} onPay={pay} busy={paying} />}
       {showMatch && mutualMatch && <MatchModal match={mutualMatch} onClose={() => setShowMatch(false)} subscribed={subscribed} onSub={() => { setShowMatch(false); setShowSub(true) }} />}
       {showAI && cur && <AIAnalysisModal match={cur} onClose={() => setShowAI(false)} />}
+      {showPassConfirm && <PassConfirmModal match={showPassConfirm} onClose={() => setShowPassConfirm(null)} onConfirm={() => { setShowPassConfirm(null); act("pass", true) }} />}
 
       {/* Sub-header */}
       <div style={{ background: "#ffffff", borderBottom: "1px solid #e5e7eb", position: "sticky", top: 64, zIndex: 40, boxShadow: "0 1px 6px rgba(0,0,0,0.04)" }}>
@@ -350,19 +350,21 @@ export default function SecMatchMatchesPage() {
                 </span>
               ) : (
                 <button onClick={() => setShowSub(true)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 99, background: "#f97316", color: "#fff", fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer" }}>
-                  <Crown style={{ width: 13, height: 13 }} /> ₹25/mo
+                  <Crown style={{ width: 13, height: 13 }} /> Free Pro Upgrade
                 </button>
               )}
             </div>
           </div>
           {/* Tabs */}
           <div style={{ display: "flex", gap: 0, borderBottom: "2px solid #f3f4f6" }}>
-            {[{ id: "discover", label: "🔍 Roommates" }, { id: "mutual", label: `🤝 Connections (${mutual.length})` }].map(t => (
+            {[{ id: "discover", label: "Roommates", icon: Search }, { id: "mutual", label: `Connections (${mutual.length})`, icon: Handshake }].map(t => {
+              const Icon = t.icon
+              return (
               <button key={t.id} onClick={() => setTab(t.id as any)}
-                style={{ padding: "8px 16px", fontSize: 13, fontWeight: 700, background: "none", border: "none", borderBottom: `2px solid ${tab === t.id ? "#f97316" : "transparent"}`, color: tab === t.id ? "#f97316" : "#9ca3af", cursor: "pointer", marginBottom: -2, transition: "color 0.15s" }}>
-                {t.label}
+                style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", fontSize: 13, fontWeight: 700, background: "none", border: "none", borderBottom: `2px solid ${tab === t.id ? "#f97316" : "transparent"}`, color: tab === t.id ? "#f97316" : "#9ca3af", cursor: "pointer", marginBottom: -2, transition: "color 0.15s" }}>
+                <Icon style={{ width: 14, height: 14 }} /> {t.label}
               </button>
-            ))}
+            )})}
           </div>
         </div>
       </div>
@@ -387,8 +389,12 @@ export default function SecMatchMatchesPage() {
               {mutual.map((m: any, i: number) => (
                 <div key={m._id} style={{ background: "#fff", border: "2px solid #fed7aa", borderRadius: 20, padding: 24, boxShadow: "0 4px 16px rgba(0,0,0,0.05)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: avatarColors[i % avatarColors.length], display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: "#fff" }}>
-                      {m.name?.[0]}
+                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: avatarColors[i % avatarColors.length], display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: "#fff", overflow: "hidden", position: "relative" }}>
+                      {m.image ? (
+                        <img src={m.image} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        m.name?.[0]
+                      )}
                     </div>
                     <div>
                       <p style={{ fontWeight: 800, fontSize: 16, color: "#111827", margin: "0 0 2px" }}>{m.name}</p>
@@ -409,7 +415,7 @@ export default function SecMatchMatchesPage() {
                     </div>
                   ) : (
                     <button onClick={() => setShowSub(true)} style={{ width: "100%", padding: "11px", borderRadius: 12, background: "#fff7ed", border: "2px solid #fed7aa", color: "#ea580c", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
-                      <Lock style={{ width: 14, height: 14 }} /> Subscribe to Chat — ₹25
+                      <Lock style={{ width: 14, height: 14 }} /> <span style={{ textDecoration: "line-through", opacity: 0.7, marginRight: 4 }}>₹25</span> Free to Chat
                     </button>
                   )}
                 </div>
@@ -431,7 +437,7 @@ export default function SecMatchMatchesPage() {
                 <p style={{ fontWeight: 700, fontSize: 13, color: "#92400e", margin: "0 0 4px" }}>Daily limit reached (5 free connections)</p>
                 <p style={{ fontSize: 12, color: "#b45309", margin: "0 0 8px" }}>Upgrade to Pro for unlimited connections!</p>
                 <button onClick={() => setShowSub(true)} style={{ padding: "6px 14px", borderRadius: 99, background: "#f97316", color: "#fff", fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer" }}>
-                  Get Pro — ₹25/month
+                  Get Pro for Free
                 </button>
               </div>
             </div>
@@ -471,8 +477,12 @@ export default function SecMatchMatchesPage() {
                 <div style={{ background: "#ffffff", borderRadius: 24, border: "1px solid #e5e7eb", overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.08)", marginBottom: 24 }}>
                   {/* Coloured header */}
                   <div style={{ height: 140, background: `linear-gradient(135deg, ${avatarColors[idx % avatarColors.length]}30, ${avatarColors[idx % avatarColors.length]}70)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                    <div style={{ width: 90, height: 90, borderRadius: "50%", border: "4px solid #fff", background: avatarColors[idx % avatarColors.length], display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}>
-                      {cur.name?.[0]}
+                    <div style={{ width: 90, height: 90, borderRadius: "50%", border: "4px solid #fff", background: avatarColors[idx % avatarColors.length], display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", boxShadow: "0 4px 16px rgba(0,0,0,0.15)", overflow: "hidden", position: "relative" }}>
+                      {cur.image ? (
+                        <img src={cur.image} alt={cur.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        cur.name?.[0]
+                      )}
                     </div>
                     {/* Score badge */}
                     <div style={{ position: "absolute", top: 14, right: 14, display: "flex", alignItems: "center", gap: 5, padding: "5px 11px", borderRadius: 99, background: scoreBg(cur.compatibilityScore), color: "#fff", fontSize: 12, fontWeight: 700 }}>
@@ -510,16 +520,16 @@ export default function SecMatchMatchesPage() {
 
                     {/* Lifestyle */}
                     <div style={{ display: "flex", flexWrap: "wrap" as any, gap: 6, marginBottom: 12 }}>
-                      {cur.sleepSchedule && <span style={{ background: "#f9fafb", border: "1px solid #e5e7eb", color: "#6b7280", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99 }}>{SLEEP[cur.sleepSchedule]}</span>}
-                      {cur.cookingHabits && <span style={{ background: "#f9fafb", border: "1px solid #e5e7eb", color: "#6b7280", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99 }}>{COOK[cur.cookingHabits]}</span>}
-                      {cur.cleanlinessLevel && <span style={{ background: "#f9fafb", border: "1px solid #e5e7eb", color: "#6b7280", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99 }}>🧹 Clean: {cur.cleanlinessLevel}/5</span>}
+                      {cur.sleepSchedule && <span style={{ display: "flex", alignItems: "center", gap: 4, background: "#f9fafb", border: "1px solid #e5e7eb", color: "#6b7280", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99 }}><Moon style={{ width: 12, height: 12 }} /> {SLEEP[cur.sleepSchedule]}</span>}
+                      {cur.cookingHabits && <span style={{ display: "flex", alignItems: "center", gap: 4, background: "#f9fafb", border: "1px solid #e5e7eb", color: "#6b7280", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99 }}><ChefHat style={{ width: 12, height: 12 }} /> {COOK[cur.cookingHabits]}</span>}
+                      {cur.cleanlinessLevel && <span style={{ display: "flex", alignItems: "center", gap: 4, background: "#f9fafb", border: "1px solid #e5e7eb", color: "#6b7280", fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 99 }}><Sparkles style={{ width: 12, height: 12 }} /> Clean: {cur.cleanlinessLevel}/5</span>}
                     </div>
 
                     {/* Shared interests */}
                     {cur.sharedInterests?.length > 0 && (
                       <div style={{ background: "#fff7ed", border: "2px solid #fed7aa", borderRadius: 14, padding: "12px 14px", marginBottom: 12 }}>
-                        <p style={{ fontSize: 11, fontWeight: 800, color: "#ea580c", margin: "0 0 8px" }}>
-                          ✨ {cur.sharedInterests.length} Shared Interest{cur.sharedInterests.length > 1 ? "s" : ""}
+                        <p style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 800, color: "#ea580c", margin: "0 0 8px" }}>
+                          <Star style={{ width: 12, height: 12 }} /> {cur.sharedInterests.length} Shared Interest{cur.sharedInterests.length > 1 ? "s" : ""}
                         </p>
                         <div style={{ display: "flex", flexWrap: "wrap" as any, gap: 5 }}>
                           {cur.sharedInterests.map((s: string) => (
