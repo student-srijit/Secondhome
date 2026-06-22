@@ -41,9 +41,17 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
     }
   }, [status, matchId])
 
-  // Auto-scroll
+  const lastMsgIdRef = useRef<string | null>(null)
+
+  // Auto-scroll only when a NEW message arrives
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (messages.length > 0) {
+      const newLastId = messages[messages.length - 1]._id
+      if (newLastId !== lastMsgIdRef.current) {
+        lastMsgIdRef.current = newLastId
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      }
+    }
   }, [messages])
 
   const send = async (e?: React.FormEvent) => {
@@ -55,8 +63,9 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
     setSending(true)
 
     // Optimistic UI update
+    const tempId = Date.now().toString()
     const tempMsg = {
-      _id: Date.now().toString(),
+      _id: tempId,
       fromUserId: session?.user?.id,
       toUserId: matchId,
       content: msg,
@@ -70,7 +79,6 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ toUserId: matchId, content: msg })
       })
-      // Fetch fresh messages
       fetchMessages()
     } catch (error) {
       console.error("Failed to send", error)
@@ -89,7 +97,7 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#f9fafb" }}>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "calc(100vh - 64px)", background: "#f9fafb" }}>
       
       {/* HEADER */}
       <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
@@ -118,9 +126,9 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
       </div>
 
       {/* CHAT AREA */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ flex: 1, padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
         {messages.length === 0 ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "40px 0" }}>
             <div style={{ width: 64, height: 64, background: "#fff7ed", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
               <Sparkles style={{ width: 32, height: 32, color: "#f97316" }} />
             </div>
@@ -156,8 +164,8 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
       </div>
 
       {/* INPUT AREA */}
-      <div style={{ background: "#ffffff", padding: "16px 20px", borderTop: "1px solid #e5e7eb" }}>
-        <form onSubmit={send} style={{ display: "flex", gap: 10 }}>
+      <div style={{ background: "#ffffff", padding: "16px 20px", borderTop: "1px solid #e5e7eb", position: "sticky", bottom: 0, zIndex: 10 }}>
+        <form onSubmit={send} style={{ display: "flex", gap: 10, maxWidth: 800, margin: "0 auto" }}>
           <input 
             value={text} 
             onChange={e => setText(e.target.value)} 
@@ -169,7 +177,7 @@ export default function ChatPage({ params }: { params: Promise<{ matchId: string
           <button 
             type="submit" 
             disabled={!text.trim() || sending}
-            style={{ width: 48, height: 48, borderRadius: "50%", background: !text.trim() || sending ? "#fdba74" : "#f97316", color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: !text.trim() || sending ? "not-allowed" : "pointer", transition: "background 0.2s" }}
+            style={{ width: 48, height: 48, borderRadius: "50%", background: !text.trim() || sending ? "#fdba74" : "#f97316", color: "#fff", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: !text.trim() || sending ? "not-allowed" : "pointer", transition: "background 0.2s", flexShrink: 0 }}
           >
             <Send style={{ width: 20, height: 20, marginLeft: -2 }} />
           </button>
