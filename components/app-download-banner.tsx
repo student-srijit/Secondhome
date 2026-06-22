@@ -73,7 +73,7 @@ export function AppDownloadBanner() {
                   Download App Now !
                 </h2>
                 <p className="text-gray-500 mt-1">
-                  Use code <span className="font-bold text-gray-900">WELCOME500</span> and get <span className="font-bold text-gray-900">FLAT ₹500 OFF*</span> on your first booking
+                  Scan the QR code or enter your email to get the direct download link.
                 </p>
               </div>
 
