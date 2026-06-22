@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Smartphone, Apple, Play } from "lucide-react"
+import { Smartphone, Download } from "lucide-react"
 import { QRCodeSVG } from "qrcode.react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -16,10 +16,10 @@ export function AppDownloadBanner() {
   const apkLink = "https://github.com/AdityaShome/SecondHome-releases/releases/download/v1.0.0/SecondHome.apk"
 
   const handleSendLink = async () => {
-    if (!contact.trim()) {
+    if (!contact.trim() || !contact.includes("@")) {
       toast({
-        title: "Input required",
-        description: "Please enter your mobile number or email address.",
+        title: "Invalid Input",
+        description: "Please enter a valid email address.",
         variant: "destructive",
       })
       return
@@ -36,7 +36,7 @@ export function AppDownloadBanner() {
 
       if (res.ok) {
         toast({
-          title: "Link Sent! 🚀",
+          title: "Email Sent! 🚀",
           description: data.message,
           style: { backgroundColor: "#10b981", color: "#fff" }, // Success green
         })
@@ -80,15 +80,11 @@ export function AppDownloadBanner() {
               {/* Input & Button */}
               <div className="flex flex-col sm:flex-row max-w-lg mt-4">
                 <div className="flex flex-1 items-center border border-gray-300 rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none bg-white overflow-hidden focus-within:border-orange-500 focus-within:ring-1 focus-within:ring-orange-500 transition-all">
-                  <div className="flex items-center gap-2 px-4 py-3 bg-gray-50 border-r border-gray-200 font-medium text-gray-700">
-                    <span>🇮🇳</span>
-                    <span>+91</span>
-                  </div>
                   <input 
-                    type="text" 
+                    type="email" 
                     value={contact}
                     onChange={(e) => setContact(e.target.value)}
-                    placeholder="Enter Mobile number or Email"
+                    placeholder="Enter Email address"
                     className="flex-1 px-4 py-3 outline-none text-gray-800 placeholder:text-gray-400 w-full"
                   />
                 </div>
@@ -105,32 +101,20 @@ export function AppDownloadBanner() {
 
           {/* Right Content - Badges & QR */}
           <div className="flex flex-col sm:flex-row items-center gap-6 border-t md:border-t-0 md:border-l border-gray-100 pt-6 md:pt-0 md:pl-8">
-            <div className="flex flex-row md:flex-col gap-3">
-              {/* Google Play Button */}
+            <div className="flex flex-row md:flex-col gap-3 w-full sm:w-auto">
+              {/* Direct APK Download Button */}
               <a 
                 href={apkLink}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-3 bg-black hover:bg-gray-900 text-white px-4 py-2.5 rounded-lg transition-transform hover:scale-105 min-w-[160px]"
+                className="flex items-center justify-center gap-3 bg-black hover:bg-gray-900 text-white px-6 py-4 rounded-xl transition-transform hover:scale-105 w-full shadow-lg"
               >
-                <Play className="w-6 h-6 fill-current" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider leading-none opacity-80">Get it on</span>
-                  <span className="text-[15px] font-semibold leading-tight mt-0.5">Google Play</span>
+                <Download className="w-6 h-6" />
+                <div className="flex flex-col items-start">
+                  <span className="text-[10px] uppercase tracking-wider leading-none opacity-80">Direct Download</span>
+                  <span className="text-[16px] font-bold leading-tight mt-0.5">Download Our App</span>
                 </div>
               </a>
-
-              {/* App Store Button */}
-              <button 
-                onClick={() => toast({ title: "Coming Soon!", description: "iOS app is currently under review. Stay tuned!" })}
-                className="flex items-center gap-3 bg-black hover:bg-gray-900 text-white px-4 py-2.5 rounded-lg transition-transform hover:scale-105 min-w-[160px]"
-              >
-                <Apple className="w-7 h-7 fill-current" />
-                <div className="flex flex-col items-start">
-                  <span className="text-[10px] uppercase tracking-wider leading-none opacity-80">Download on the</span>
-                  <span className="text-[15px] font-semibold leading-tight mt-0.5">App Store</span>
-                </div>
-              </button>
             </div>
 
             <div className="hidden sm:flex flex-col items-center">
