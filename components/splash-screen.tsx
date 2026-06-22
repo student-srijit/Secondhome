@@ -10,19 +10,23 @@ export function SplashScreen() {
   useEffect(() => {
     setIsMounted(true)
     try {
-      const hasSeenSplash = sessionStorage.getItem("hasSeenSplash")
+      // Use localStorage so it persists across tabs/windows, not just one session tab
+      const hasSeenSplash = localStorage.getItem("hasSeenSplash")
+      
+      // If we want it to reset occasionally, we could store a timestamp.
+      // But for now, we'll just check if it exists.
       if (!hasSeenSplash) {
         setShow(true)
-        // Allow 3.5 seconds for the user to admire the splash screen before dismissing it
+        // Allow 2 seconds for a fast, snappy splash screen
         const timer = setTimeout(() => {
           setShow(false)
-          sessionStorage.setItem("hasSeenSplash", "true")
-        }, 3500)
+          localStorage.setItem("hasSeenSplash", "true")
+        }, 2000)
         return () => clearTimeout(timer)
       }
     } catch (e) {
-      // Ignore if sessionStorage is not available
-      console.error("SessionStorage error", e)
+      // Ignore if localStorage is not available
+      console.error("LocalStorage error", e)
     }
   }, [])
 
@@ -35,7 +39,7 @@ export function SplashScreen() {
         <motion.div
           key="splash"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+          exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeInOut" } }}
           className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden bg-[#0a0f1c]"
         >
           {/* Background Glows */}
@@ -45,17 +49,17 @@ export function SplashScreen() {
           </div>
 
           <motion.div 
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.9, opacity: 0, y: 15 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="relative z-10 flex flex-col items-center"
           >
             {/* Logo */}
             <motion.div 
               initial={{ rotate: -10, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.8, type: "spring", stiffness: 100 }}
-              className="w-28 h-28 md:w-36 md:h-36 mb-8 relative"
+              transition={{ delay: 0.1, duration: 0.5, type: "spring", stiffness: 120 }}
+              className="w-24 h-24 md:w-32 md:h-32 mb-6 relative"
             >
                <img 
                  src="/sechome%20favicon.png" 
@@ -65,7 +69,7 @@ export function SplashScreen() {
             </motion.div>
             
             {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white flex items-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white flex items-center">
               Second<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">Home</span>
             </h1>
             
@@ -73,13 +77,12 @@ export function SplashScreen() {
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.8 }}
-              className="mt-6 text-slate-300 text-lg md:text-xl font-medium tracking-wide text-center max-w-sm px-4"
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="mt-4 text-slate-300 text-base md:text-lg font-medium tracking-wide text-center max-w-sm px-4"
             >
-              Your Perfect Accommodation Near College
+              Your Perfect Accommodation
             </motion.p>
           </motion.div>
-
         </motion.div>
       )}
     </AnimatePresence>
