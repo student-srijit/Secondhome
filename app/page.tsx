@@ -215,23 +215,35 @@ export default function Page() {
                 <p className="text-lg text-gray-700 mb-6">
                   {t("home.welcomeDesc")}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    onClick={() => router.push("/signup")}
-                    size="lg"
-                    className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 h-auto"
-                  >
-                    {t("home.ctaPrimary")} 
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                  <Button
-                    onClick={() => router.push("/login")}
-                    size="lg"
-                    variant="outline"
-                    className="bg-white text-gray-900 text-lg px-8 py-6 h-auto border-2 border-gray-300 hover:bg-white hover:border-orange-500 hover:text-orange-600 transition-all"
-                  >
-                    {t("home.ctaSecondary")}
-                  </Button>
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button
+                      onClick={() => router.push("/signup")}
+                      size="lg"
+                      className="bg-orange-500 hover:bg-orange-600 text-white text-lg px-8 py-6 h-auto flex-1 max-w-[250px]"
+                    >
+                      {t("home.ctaPrimary")} 
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/login")}
+                      size="lg"
+                      variant="outline"
+                      className="bg-white text-gray-900 text-lg px-8 py-6 h-auto border-2 border-gray-300 hover:bg-white hover:border-orange-500 hover:text-orange-600 transition-all flex-1 max-w-[250px]"
+                    >
+                      {t("home.ctaSecondary")}
+                    </Button>
+                  </div>
+                  <div className="flex justify-center">
+                    <Button
+                      onClick={() => router.push("/map")}
+                      size="lg"
+                      className="bg-gray-900 hover:bg-gray-800 text-white text-lg px-8 py-6 h-auto shadow-xl transition-all hover:-translate-y-1 hover:shadow-2xl border border-gray-700 w-full sm:w-auto max-w-[516px]"
+                    >
+                      <MapPin className="mr-2 h-5 w-5 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                      <span className="uppercase tracking-wider">Explore on Map</span>
+                    </Button>
+                  </div>
                 </div>
                 <div className="mt-6 grid grid-cols-2 gap-4 text-center">
                   <div>
@@ -334,15 +346,24 @@ export default function Page() {
                     </div>
                   </div>
 
-                  {/* Search Button */}
-                  <Button
-                    onClick={handleSearch}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 md:py-6 text-base md:text-lg rounded shadow-md"
-                  >
-                    <Search className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                    <span className="hidden sm:inline">SEARCH PROPERTIES</span>
-                    <span className="sm:hidden">SEARCH</span>
-                  </Button>
+                  {/* Search and Map Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full mt-2">
+                    <Button
+                      onClick={handleSearch}
+                      className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 md:py-6 text-base md:text-lg rounded shadow-md"
+                    >
+                      <Search className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                      <span className="hidden sm:inline">SEARCH PROPERTIES</span>
+                      <span className="sm:hidden">SEARCH</span>
+                    </Button>
+                    <Button
+                      onClick={() => router.push("/map")}
+                      className="sm:w-auto px-6 md:px-8 bg-gray-900 hover:bg-gray-800 text-white font-bold py-4 md:py-6 text-base md:text-lg rounded shadow-xl flex items-center justify-center transition-all hover:-translate-y-1 hover:shadow-2xl border border-gray-700"
+                    >
+                      <MapPin className="w-5 h-5 md:w-6 md:h-6 mr-2 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                      <span className="whitespace-nowrap uppercase tracking-wider">Explore Map</span>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
