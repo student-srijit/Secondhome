@@ -83,7 +83,7 @@ export default function VerifiedPropertiesPage() {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url(/verified_secondhome.png)',
+            backgroundImage: 'url(/verified_secondhome.jpg)',
             backgroundPosition: 'center center',
             backgroundSize: 'cover',
           }}
