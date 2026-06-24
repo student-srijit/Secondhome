@@ -27,8 +27,9 @@ export async function POST(req: NextRequest) {
         Property.countDocuments({ isApproved: true }),
         Property.aggregate([
           { $match: { isApproved: true } },
-          // Use location field (city is not in the schema, location holds area/city info)
-          { $group: { _id: { $trim: { input: { $arrayElemAt: [{ $split: ["$location", ","] }, -1] } } }, count: { $sum: 1 } } },
+          // location is like "Rajajinagar, Bangalore, Karnataka" — take second-to-last segment for the city name
+          { $group: { _id: { $trim: { input: { $arrayElemAt: [{ $split: ["$location", ","] }, -2] } } }, count: { $sum: 1 } } },
+          { $match: { _id: { $ne: null } } },
           { $sort: { count: -1 } },
           { $limit: 20 },
         ]),

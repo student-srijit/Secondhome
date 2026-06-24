@@ -51,7 +51,6 @@ export function ContactChat() {
         const res = await fetch(`/api/contact/chat/${conversationId}?token=${userToken}`)
         const data = await res.json()
         if (res.ok && data.success) {
-          // Map server messages to UI shape
           const serverMsgs: MessageItem[] = (data.messages || []).map((m: any) => ({
             role: m.role === "agent" ? "system" : (m.role as "user" | "system"),
             content: String(m.content || ""),
@@ -111,7 +110,7 @@ export function ContactChat() {
       ])
       setSuggestions(quickButtons)
 
-      // Auto-escalate: if the AI signals it cannot resolve, switch to executive mode
+      // Auto-escalate if the AI signals it cannot resolve
       if (data.escalate === true) {
         setSuggestions([])
         setMessages((prev) => [
@@ -122,11 +121,7 @@ export function ContactChat() {
             ts: Date.now(),
           },
         ])
-        setMode("idle")
-        // Small delay so the user sees the system message first
-        setTimeout(() => {
-          setMode("idle")
-        }, 500)
+        setTimeout(() => setMode("idle"), 500)
       }
     } catch (e: any) {
       toast({ title: "AI unavailable", description: e.message || "Please try again.", variant: "destructive" })
@@ -156,7 +151,6 @@ export function ContactChat() {
         { role: "system", content: "Connecting you to an executive... We'll notify you shortly.", ts: Date.now() },
       ])
 
-      // Store conversation credentials and start polling
       if (data.conversationId && data.userToken) {
         setConversationId(data.conversationId)
         setUserToken(data.userToken)
@@ -198,9 +192,7 @@ export function ContactChat() {
     if (!text) return
     setInput("")
 
-    // If conversation exists, send to live chat backend
     if (conversationId && userToken) {
-      // Optimistic update
       setMessages((prev) => [...prev, { role: "user", content: text, ts: Date.now() }])
       try {
         await fetch(`/api/contact/chat/${conversationId}`, {
@@ -214,7 +206,6 @@ export function ContactChat() {
       return
     }
 
-    // Before escalation, use AI quick help
     if (mode === "ai" || mode === "idle") {
       setSuggestions([])
       await sendAI(text)
@@ -222,11 +213,14 @@ export function ContactChat() {
     }
   }
 
-  const headerTitle = mode === "ai" ? "SecondHome Assistant" : mode === "escalating" ? "Connecting you..." : mode === "connected" ? (agentJoined ? "Executive Chat" : "Connecting you...") : "How can we help?"
+  const headerTitle =
+    mode === "ai" ? "SecondHome Assistant" :
+    mode === "escalating" ? "Connecting you..." :
+    mode === "connected" ? (agentJoined ? "Executive Chat" : "Connecting you...") :
+    "How can we help?"
 
   const handleOpenChange = (o: boolean) => {
     setOpen(o)
-    // Auto-start AI chat when opening — no extra click
     if (o && mode === "idle") setMode("ai")
   }
 
@@ -254,6 +248,7 @@ export function ContactChat() {
           </DialogTitle>
         </DialogHeader>
 
+        {/* ── Executive connect panel (shown when AI escalates or user clicks "Talk to executive") ── */}
         {mode === "idle" && (
           <div className="p-6 space-y-4">
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
@@ -278,12 +273,16 @@ export function ContactChat() {
           </div>
         )}
 
+        {/* ── AI / live-chat panel ── */}
         {(mode === "ai" || mode === "escalating" || mode === "connected") && (
           <div className="flex flex-col h-[520px]">
+            {/* Message list */}
             <div ref={scrollerRef} className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-muted/30">
               {messages.length === 0 && (
                 <div className="flex flex-col gap-3">
-                  <div className="text-sm text-muted-foreground">👋 Hi! I'm the SecondHome Assistant. Ask me anything about our listings, cities we operate in, bookings, or how the platform works.</div>
+                  <div className="text-sm text-muted-foreground">
+                    👋 Hi! I'm the SecondHome Assistant. Ask me anything about our listings, cities we operate in, bookings, or how the platform works.
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {["What cities are you in?", "How do I book a visit?", "Is my listing verified?", "What types of properties do you have?"].map((q) => (
                       <button
@@ -302,7 +301,13 @@ export function ContactChat() {
               )}
               {messages.map((m, idx) => (
                 <div key={idx} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow ${m.role === "user" ? "bg-primary text-primary-foreground" : m.role === "system" ? "bg-amber-100 border border-amber-200 text-amber-900" : "bg-white"}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow ${
+                    m.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : m.role === "system"
+                      ? "bg-amber-100 border border-amber-200 text-amber-900"
+                      : "bg-white"
+                  }`}>
                     {m.content}
                   </div>
                 </div>
@@ -311,6 +316,8 @@ export function ContactChat() {
                 <div className="text-xs text-muted-foreground">Connecting to an executive… please wait.</div>
               )}
             </div>
+
+            {/* Quick action chips — clicking sends directly, never fills the textarea */}
             {suggestions.length > 0 && !conversationId && (
               <div className="border-t px-4 py-2 bg-white">
                 <div className="text-xs text-muted-foreground mb-1">Quick actions</div>
@@ -320,10 +327,7 @@ export function ContactChat() {
                       key={idx}
                       variant="secondary"
                       size="sm"
-                      onClick={() => {
-                        setInput(s.text)
-                        sendAI(s.text)
-                      }}
+                      onClick={() => sendAI(s.text)}
                     >
                       {s.label}
                     </Button>
@@ -331,12 +335,19 @@ export function ContactChat() {
                 </div>
               </div>
             )}
+
+            {/* Input footer */}
             <div className="border-t p-3 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <Textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); onSend() } }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault()
+                      onSend()
+                    }
+                  }}
                   placeholder="Type your message..."
                   className="min-h-[44px] max-h-[120px] resize-y"
                 />
