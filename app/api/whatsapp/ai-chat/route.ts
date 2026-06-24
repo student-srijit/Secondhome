@@ -22,16 +22,18 @@ export async function POST(req: NextRequest) {
     // ── CONTACT PAGE: fully context-aware with live DB data ─────────────────
     if (!propertyId || propertyId === "contact") {
       // Pull real aggregate data from DB so the LLM never hallucinates
+      // isApproved is the correct field in the Property model (no isActive field exists)
       const [totalCount, cityAgg, typeAgg] = await Promise.all([
-        Property.countDocuments({ isActive: true }),
+        Property.countDocuments({ isApproved: true }),
         Property.aggregate([
-          { $match: { isActive: true } },
-          { $group: { _id: "$city", count: { $sum: 1 } } },
+          { $match: { isApproved: true } },
+          // Use location field (city is not in the schema, location holds area/city info)
+          { $group: { _id: { $trim: { input: { $arrayElemAt: [{ $split: ["$location", ","] }, -1] } } }, count: { $sum: 1 } } },
           { $sort: { count: -1 } },
           { $limit: 20 },
         ]),
         Property.aggregate([
-          { $match: { isActive: true } },
+          { $match: { isApproved: true } },
           { $group: { _id: "$type", count: { $sum: 1 } } },
           { $sort: { count: -1 } },
         ]),
