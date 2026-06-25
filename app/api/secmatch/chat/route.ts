@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { connectToDatabase } from "@/lib/mongodb"
 import { getSession } from "@/lib/get-session"
 import { getSecMatchMessageModel } from "@/models/SecMatchMessage"
 
@@ -14,10 +13,9 @@ export async function GET(request: NextRequest) {
     const matchId = searchParams.get("matchId")
     if (!matchId) return NextResponse.json({ error: "matchId is required" }, { status: 400 })
 
-    await connectToDatabase()
+    // connectToDatabase() is called inside getSecMatchMessageModel()
     const SecMatchMessage = await getSecMatchMessageModel()
 
-    // Find all messages between current user and matchId
     const messages = await SecMatchMessage.find({
       $or: [
         { fromUserId: session.user.id, toUserId: matchId },
@@ -35,7 +33,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, messages })
   } catch (error: any) {
-    console.error("Error fetching chat messages:", error)
+    console.error("❌ [secmatch/chat GET] Error fetching messages:", error?.message, error?.stack)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
@@ -47,23 +45,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { toUserId, content } = await request.json()
+    const body = await request.json()
+    const { toUserId, content } = body
+
     if (!toUserId || !content || content.trim().length === 0) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+      console.error("❌ [secmatch/chat POST] Invalid request body:", { toUserId, content })
+      return NextResponse.json({ error: "Invalid request: toUserId and content are required" }, { status: 400 })
     }
 
-    await connectToDatabase()
+    // connectToDatabase() is called inside getSecMatchMessageModel()
     const SecMatchMessage = await getSecMatchMessageModel()
 
     const newMessage = await SecMatchMessage.create({
       fromUserId: session.user.id,
       toUserId,
-      content: content.trim()
+      content: content.trim(),
+    })
+
+    console.log("✅ [secmatch/chat POST] Message saved:", {
+      id: newMessage._id,
+      from: session.user.id,
+      to: toUserId,
+      contentLength: content.trim().length,
     })
 
     return NextResponse.json({ success: true, message: newMessage })
   } catch (error: any) {
-    console.error("Error sending chat message:", error)
+    console.error("❌ [secmatch/chat POST] Failed to save message:", error?.message, error?.stack)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
