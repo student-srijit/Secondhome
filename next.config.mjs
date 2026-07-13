@@ -63,17 +63,18 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com https://platform-lookaside.fbsbx.com https://www.google-analytics.com",
-              "connect-src 'self' https://api.cloudinary.com https://www.google-analytics.com https://vitals.vercel-insights.com",
-              "frame-src 'none'",
+              "img-src 'self' data: blob: https://res.cloudinary.com https://lh3.googleusercontent.com https://platform-lookaside.fbsbx.com https://www.google-analytics.com https://*.tile.openstreetmap.org https://server.arcgisonline.com https://unpkg.com",
+              "connect-src 'self' https://api.cloudinary.com https://www.google-analytics.com https://vitals.vercel-insights.com https://overpass-api.de https://*.overpass-api.de https://nominatim.openstreetmap.org https://challenges.cloudflare.com",
+              "frame-src 'self' https://challenges.cloudflare.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
             ].join('; '),
           },
+
         ],
       },
       {
