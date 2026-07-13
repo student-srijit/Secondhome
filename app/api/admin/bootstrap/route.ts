@@ -5,19 +5,27 @@ import { User } from "@/models/user"
 
 /**
  * POST /api/admin/bootstrap
- * Creates or updates the default admin account:
- *   email: ...
- *   password: ...
+ * Creates or updates the default admin account.
  *
- * Secured by ADMIN_SEED_TOKEN env. Call with header:
- *   x-admin-seed-token: <ADMIN_SEED_TOKEN>
+ * MUST be secured with ADMIN_SEED_TOKEN env variable.
+ * Call with header: x-admin-seed-token: <ADMIN_SEED_TOKEN>
+ *
+ * ⚠️  This route MUST be disabled or deleted after initial setup.
  */
 export async function POST(req: Request) {
   const token = req.headers.get("x-admin-seed-token")
   const expected = process.env.ADMIN_SEED_TOKEN
 
-  // If ADMIN_SEED_TOKEN is set, enforce it. If not set, allow open bootstrap.
-  if (expected && token !== expected) {
+  // SECURITY: If ADMIN_SEED_TOKEN is not set, block the route entirely.
+  // Never allow open bootstrapping — an attacker could call this to create/overwrite the admin account.
+  if (!expected) {
+    return NextResponse.json(
+      { error: "Bootstrap is disabled. Set ADMIN_SEED_TOKEN in environment variables to enable." },
+      { status: 403 }
+    )
+  }
+
+  if (token !== expected) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -48,11 +56,11 @@ export async function POST(req: Request) {
     { upsert: true, new: true },
   )
 
+  // SECURITY: Never echo back credentials — not even a partial password.
   return NextResponse.json({
-    message: "Admin account bootstrapped",
+    message: "Admin account bootstrapped successfully.",
     email,
-    password: plainPassword,
     role: updated.role,
+    // password intentionally omitted from response
   })
 }
-

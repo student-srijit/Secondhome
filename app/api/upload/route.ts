@@ -108,7 +108,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No files uploaded" }, { status: 400 })
     }
 
-    const uploadedUrls: string[] = []
+    // ── Security: Validate file type and size ────────────────────────────────
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"]
+    const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024 // 5 MB
+
+    for (const file of files) {
+      if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+        return NextResponse.json(
+          { error: `File type "${file.type}" is not allowed. Only JPEG, PNG, WebP, and GIF images are accepted.` },
+          { status: 400 }
+        )
+      }
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        return NextResponse.json(
+          { error: `File "${file.name}" is too large. Maximum allowed size is 5 MB.` },
+          { status: 400 }
+        )
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
 
     for (const file of files) {
       const bytes = await file.arrayBuffer()
@@ -179,22 +198,17 @@ export async function POST(req: Request) {
             })
             console.log("✅ Upload successful (method 3 - no public_id):", result?.public_id)
           } catch (error3: any) {
-            // All methods failed - this means the API secret is definitely wrong
-            console.error("❌ All upload methods failed - API Secret is incorrect:", {
+            // All methods failed
+            console.error("❌ All upload methods failed:", {
               method1: uploadError?.message,
               method2: error2?.message,
               method3: error3?.message,
               cloud_name: cloudName,
               api_key: apiKey,
+              // SECURITY: Never log or expose apiSecret
             })
-            
-            // Provide very specific error message
-            throw new Error(
-              `CLOUDINARY_API_SECRET is incorrect. ` +
-              `The secret '${apiSecret.substring(0, 5)}...${apiSecret.substring(apiSecret.length - 3)}' ` +
-              `does not match Cloud Name '${cloudName}' and API Key '${apiKey}'. ` +
-              `Please go to https://console.cloudinary.com/settings/api-keys and copy the EXACT API Secret for this account.`
-            )
+            // SECURITY: Throw a generic message — do NOT include API key/secret in the error
+            throw new Error("Image upload failed. Please check your Cloudinary configuration.")
           }
         }
       }
@@ -216,22 +230,19 @@ export async function POST(req: Request) {
       imageUrls: uploadedUrls,
     })
   } catch (error: any) {
-    console.error("Error uploading files:", error)
-    
-    // Provide specific error messages
-    const errorMessage = error?.message || "Failed to upload files"
-    
-    // Check for signature errors
-    if (errorMessage.includes("Invalid Signature") || errorMessage.includes("signature")) {
-      return NextResponse.json({ 
-        error: "Cloudinary authentication failed. Please verify your API credentials (Cloud Name, API Key, and API Secret) match in your Cloudinary dashboard.",
-        details: "The API secret doesn't match your Cloud Name and API Key. Please check https://console.cloudinary.com/settings/api-keys"
-      }, { status: 401 })
+    // SECURITY: Log details server-side only — never send internal error details to the client
+    console.error("❌ Upload error (server-only):", error?.message)
+
+    if (error?.message?.includes("Invalid Signature") || error?.message?.includes("signature")) {
+      return NextResponse.json(
+        { error: "Image upload failed due to a configuration issue. Please contact support." },
+        { status: 500 }
+      )
     }
-    
-    return NextResponse.json({ 
-      error: errorMessage,
-      details: error?.details || "Please check your Cloudinary configuration and try again."
-    }, { status: 500 })
+
+    return NextResponse.json(
+      { error: "Image upload failed. Please try again or contact support." },
+      { status: 500 }
+    )
   }
 }

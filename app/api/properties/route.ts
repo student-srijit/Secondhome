@@ -50,7 +50,12 @@ export async function GET(request: Request) {
       if (minPrice) query.price.$gte = parseInt(minPrice)
       if (maxPrice) query.price.$lte = parseInt(maxPrice)
     }
-    if (location) query.location = new RegExp(location, "i")
+    if (location) {
+      // SECURITY: Escape special regex characters to prevent ReDoS attacks
+      const escapedLocation = location.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      query.location = new RegExp(escapedLocation, "i")
+    }
+
 
     const skip = (page - 1) * limit
 
@@ -160,12 +165,38 @@ export async function POST(req: Request) {
 
     await connectToDatabase()
 
+    // ── SECURITY: Explicit field allowlist ───────────────────────────────────
+    // NEVER spread the entire req.body into a Mongoose model — attackers can
+    // inject fields like isApproved:true, verificationStatus:'verified',
+    // owner:<other-user-id>, role:'admin', etc.
+    // Only pick the fields that a user is legitimately allowed to submit.
+    const allowedFields = {
+      title:          body.title,
+      description:    body.description,
+      type:           body.type,
+      gender:         body.gender,
+      address:        body.address,
+      location:       body.location,
+      coordinates:    body.coordinates,
+      price:          body.price,
+      deposit:        body.deposit,
+      feeStructure:   body.feeStructure,
+      images:         body.images,
+      amenities:      body.amenities,
+      rules:          body.rules,
+      roomTypes:      body.roomTypes,
+      distance:       body.distance,
+      nearbyPlaces:   body.nearbyPlaces,
+      nearbyColleges: body.nearbyColleges,
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
     // Create property with AI review data
     const newProperty = new Property({
-      ...body,
-      owner: session.user.id,
+      ...allowedFields,
+      owner: session.user.id,          // always force to the logged-in user
       createdAt: new Date(),
-      isApproved: autoApproved, // Auto-approve if AI verified
+      isApproved: autoApproved,        // controlled server-side only
       approvedAt: autoApproved ? new Date() : undefined,
       approvalMethod: autoApproved ? "AI" : undefined,
       aiReview: aiVerification ? {

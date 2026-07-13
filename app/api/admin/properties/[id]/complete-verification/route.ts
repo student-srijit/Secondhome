@@ -109,7 +109,7 @@ export async function POST(
     console.error("Verification completion error:", error)
     return NextResponse.json(
       {
-        error: error.message || "Failed to complete verification",
+        error: "Failed to complete verification. Please try again or contact support.",
       },
       { status: 500 }
     )
