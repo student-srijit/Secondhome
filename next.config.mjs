@@ -53,7 +53,7 @@ const nextConfig = {
           // Control referrer info sent to third parties
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           // Disable browser features that aren't needed
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), payment=()' },
           // Force HTTPS for 1 year (HSTS) — only effective in production via Vercel
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
           // XSS Protection for older browsers
