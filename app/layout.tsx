@@ -34,8 +34,7 @@ export default function RootLayout({
         <link rel="icon" href="/sechome%20favicon.png" type="image/png" />
         <link rel="shortcut icon" href="/sechome%20favicon.png" type="image/png" />
         <link rel="apple-touch-icon" href="/sechome%20favicon.png" />
-        {/* Include Tailwind CSS from CDN */}
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css" rel="stylesheet" />
+
         {/* Leaflet CSS */}
         <link
           rel="stylesheet"
