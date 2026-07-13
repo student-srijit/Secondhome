@@ -807,8 +807,8 @@ export default function MapPage() {
       // Multiple Overpass API endpoints (fallback if one is down)
       const overpassEndpoints = [
         'https://overpass-api.de/api/interpreter',
-        'https://overpass.kumi.systems/api/interpreter',
-        'https://overpass.openstreetmap.ru/api/interpreter',
+        'https://lz4.overpass-api.de/api/interpreter',
+        'https://z.overpass-api.de/api/interpreter',
       ]
 
       let response: Response | null = null
@@ -824,7 +824,10 @@ export default function MapPage() {
           
           response = await fetch(overpassEndpoints[i], {
             method: 'POST',
-            body: overpassQuery,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `data=${encodeURIComponent(overpassQuery)}`,
             signal: controller.signal,
           })
 
