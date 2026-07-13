@@ -30,10 +30,10 @@ export const authOptions: NextAuthOptions = {
 
         console.log("🔍 Admin check:", { 
           normalizedEmail, 
-          adminEmail, 
+          hasAdminEmail: !!adminEmail, 
           hasAdminPassword: !!adminPassword,
-          emailMatch: normalizedEmail === adminEmail,
-          passwordMatch: credentials.password === adminPassword
+          emailMatch: normalizedEmail === adminEmail
+          // SECURITY: Do not log passwordMatch as it can infer password existence, and definitely never log the password itself
         })
 
         if (adminEmail && adminPassword && normalizedEmail === adminEmail && credentials.password === adminPassword) {

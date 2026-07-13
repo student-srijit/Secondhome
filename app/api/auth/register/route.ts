@@ -22,7 +22,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: validation.error.errors[0].message }, { status: 400 })
     }
 
-    const { name, email, password, phone } = body
+    const { name, email, password, phone, captchaToken } = body
+
+    // CAPTCHA Validation (Cloudflare Turnstile)
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
+    if (turnstileSecret) {
+      if (!captchaToken) {
+        return NextResponse.json({ error: "CAPTCHA verification is required." }, { status: 400 })
+      }
+      
+      const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `secret=${turnstileSecret}&response=${captchaToken}`,
+      })
+      
+      const verifyData = await verifyRes.json()
+      if (!verifyData.success) {
+        return NextResponse.json({ error: "CAPTCHA verification failed. Are you a bot?" }, { status: 400 })
+      }
+    }
+
 
     // Property-owner registration should be OTP-protected
     if (body.isPropertyOwner) {

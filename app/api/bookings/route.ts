@@ -4,6 +4,29 @@ import { Booking } from "@/models/booking"
 import { Property } from "@/models/property"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth-options"
+import { z } from "zod"
+
+const bookingSchema = z.object({
+  propertyId: z.string().optional(),
+  property: z.string().optional(),
+  checkInDate: z.string().datetime().or(z.string()).optional(),
+  checkIn: z.string().datetime().or(z.string()).optional(),
+  checkOutDate: z.string().datetime().or(z.string()).optional(),
+  checkOut: z.string().datetime().or(z.string()).optional(),
+  roomType: z.string().optional(),
+  totalAmount: z.number().nonnegative().optional(),
+  guests: z.number().int().positive().default(1),
+  commissionRate: z.number().nonnegative().default(7.5),
+  settlingInKit: z.object({
+    price: z.number().nonnegative()
+  }).optional().nullable()
+}).refine(data => data.propertyId || data.property, {
+  message: "Property ID is required",
+  path: ["propertyId"]
+}).refine(data => data.checkInDate || data.checkIn, {
+  message: "Check-in date is required",
+  path: ["checkInDate"]
+})
 
 export async function GET(req: Request) {
   try {
@@ -35,20 +58,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const body = await req.json()
+    const rawBody = await req.json()
+    const parsed = bookingSchema.safeParse(rawBody)
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid input", details: parsed.error.format() }, { status: 400 })
+    }
+
+    const body = parsed.data
+
     // Support both field names for flexibility
     const propertyId = body.propertyId || body.property
     const checkInDate = body.checkInDate || body.checkIn
     const checkOutDate = body.checkOutDate || body.checkOut
     const roomType = body.roomType
     const totalAmount = body.totalAmount
-    const guests = body.guests || 1
+    const guests = body.guests
     // Business Model - Revenue Stream 4: Settling In Kits
-    const settlingInKit = body.settlingInKit || null
+    const settlingInKit = body.settlingInKit
 
-    if (!propertyId || !checkInDate) {
-      return NextResponse.json({ error: "Missing required fields (property and checkIn)" }, { status: 400 })
-    }
 
     await connectToDatabase()
 
