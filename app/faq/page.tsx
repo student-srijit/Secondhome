@@ -222,7 +222,7 @@ export default function FAQPage() {
                       <Accordion type="single" collapsible className="w-full">
                         {category.questions.map((faq, faqIndex) => (
                           <AccordionItem key={faqIndex} value={`item-${faqIndex}`}>
-                            <AccordionTrigger className="text-left">{faq.question}</AccordionTrigger>
+                            <AccordionTrigger className="text-left text-[15px]">{faq.question}</AccordionTrigger>
                             <AccordionContent>
                               <p className="text-muted-foreground">{faq.answer}</p>
                             </AccordionContent>

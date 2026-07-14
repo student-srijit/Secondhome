@@ -103,23 +103,6 @@ export default function Footer() {
                 ))}
               </select>
             </div>
-            <div className="flex items-center gap-2">
-              {socials.map(({ Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={href === "#" ? "_self" : "_blank"}
-                  rel="noopener noreferrer"
-                  onClick={(e) => {
-                    if (href === "#") e.preventDefault()
-                  }}
-                  className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-orange-300 transition-all duration-300 border border-white/10"
-                  aria-label={label}
-                >
-                  <Icon className="h-4 w-4" />
-                </a>
-              ))}
-            </div>
           </div>
         </div>
 

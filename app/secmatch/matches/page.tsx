@@ -280,7 +280,11 @@ export default function SecMatchMatchesPage() {
       const d = await r.json()
       if (action === "like") {
         setLiked(c => c + 1)
-        if (d.isMutualMatch) { setMutualMatch(d.matchProfile); setShowMatch(true) }
+        if (d.isMutualMatch) { 
+          setMutualMatch(d.matchProfile); 
+          setShowMatch(true);
+          setMutual(prev => [...prev, d.matchProfile]);
+        }
       }
       setIdx(i => i + 1)
     } finally { setActing(false) }
@@ -479,9 +483,9 @@ export default function SecMatchMatchesPage() {
                   <div style={{ height: 140, background: `linear-gradient(135deg, ${avatarColors[idx % avatarColors.length]}30, ${avatarColors[idx % avatarColors.length]}70)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
                     <div style={{ width: 90, height: 90, borderRadius: "50%", border: "4px solid #fff", background: avatarColors[idx % avatarColors.length], display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", boxShadow: "0 4px 16px rgba(0,0,0,0.15)", overflow: "hidden", position: "relative" }}>
                       {cur.image ? (
-                        <img src={cur.image} alt={cur.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img src={cur.image} alt="Hidden Profile" style={{ width: "100%", height: "100%", objectFit: "cover", filter: "blur(14px)", transform: "scale(1.2)" }} />
                       ) : (
-                        cur.name?.[0]
+                        "?"
                       )}
                     </div>
                     {/* Score badge */}
@@ -494,7 +498,10 @@ export default function SecMatchMatchesPage() {
                   <div style={{ padding: "20px 22px" }}>
                     <div style={{ marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                       <div>
-                        <h2 style={{ fontSize: 22, fontWeight: 900, color: "#111827", margin: "0 0 4px" }}>{cur.name}</h2>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                          <h2 style={{ fontSize: 22, fontWeight: 900, color: "#111827", margin: 0, filter: "blur(5px)", userSelect: "none" }}>Hidden Profile</h2>
+                          <Lock style={{ width: 16, height: 16, color: "#9ca3af" }} />
+                        </div>
                         <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>{cur.age} years • {cur.year} • {cur.course}</p>
                       </div>
                       

@@ -63,7 +63,7 @@ function ProfileSkeleton() {
 }
 
 // ─── Profile Card ──────────────────────────────────────────────────────────
-function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: number; isAuth: boolean }) {
+function ProfileCard({ profile, idx, isAuth, hasProfile }: { profile: LiveProfile; idx: number; isAuth: boolean; hasProfile?: boolean }) {
   const router = useRouter()
   const { t } = useLanguage()
   const color = AVATAR_COLORS[idx % AVATAR_COLORS.length]
@@ -87,19 +87,17 @@ function ProfileCard({ profile, idx, isAuth }: { profile: LiveProfile; idx: numb
           </span>
         </div>
 
-        {/* Content — blur-locked for guests */}
+        {/* Content — completely blur-locked for preview privacy */}
         <div style={{ padding: "18px 20px", position: "relative" }}>
-          {!isAuth && (
-            <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(5px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10, borderRadius: "0 0 20px 20px" }}
-              onClick={() => router.push("/signup")}>
-              <div style={{ background: "#fff", padding: "12px 24px", borderRadius: 99, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
-                <Lock style={{ width: 16, height: 16, color: "#f97316" }} />
-                <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{t("secmatch.profile.cta")}</span>
-              </div>
+          <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.2)", backdropFilter: "blur(5px)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10, borderRadius: "0 0 20px 20px" }}
+            onClick={() => router.push(isAuth && hasProfile ? "/secmatch/matches" : isAuth ? "/secmatch/profile" : "/signup")}>
+            <div style={{ background: "#fff", padding: "12px 24px", borderRadius: 99, display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
+              <Lock style={{ width: 16, height: 16, color: "#f97316" }} />
+              <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{isAuth && hasProfile ? "View Your Matches" : t("secmatch.profile.cta")}</span>
             </div>
-          )}
+          </div>
 
-          <div style={{ filter: !isAuth ? "blur(5px)" : "none", transition: "filter 0.3s", userSelect: !isAuth ? "none" : "auto" }}>
+          <div style={{ filter: "blur(5px)", transition: "filter 0.3s", userSelect: "none" }}>
             <p style={{ fontWeight: 800, fontSize: 17, color: "#111827", margin: "0 0 2px" }}>{profile.name}</p>
           <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 12px" }}>{profile.age} yrs • {profile.year} • {profile.course}</p>
 
@@ -364,7 +362,7 @@ export default function SecMatchPage() {
             ) : (
               <AnimatePresence mode="wait">
                 {profiles.map((p, i) => (
-                  <ProfileCard key={p.id} profile={p} idx={i} isAuth={isAuth} />
+                  <ProfileCard key={p.id} profile={p} idx={i} isAuth={isAuth} hasProfile={hasProfile} />
                 ))}
               </AnimatePresence>
             )}

@@ -1,189 +1,171 @@
 "use client"
 
-import { motion } from "framer-motion"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Shield, Lock, Eye, Database, Server, RefreshCw, ChevronRight } from "lucide-react"
 
 export default function PrivacyPolicyPage() {
+  const lastUpdated = "July 14, 2026"
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <motion.div
-          className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
-
-          <div className="prose max-w-none">
-            <p className="text-muted-foreground mb-6">Last updated: April 2, 2025</p>
-
-            <p className="mb-4">
-              This Privacy Policy describes how Second Home ("we," "our," or "us") collects, uses, and shares your
-              personal information when you use our website, mobile application, and services (collectively, the
-              "Services").
-            </p>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">1. Information We Collect</h2>
-
-            <h3 className="text-lg font-semibold mt-6 mb-3">1.1 Information You Provide to Us</h3>
-            <p className="mb-4">We collect information you provide directly to us when you:</p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Create an account or profile</li>
-              <li>Fill out forms on our Services</li>
-              <li>List a property</li>
-              <li>Make a booking</li>
-              <li>Submit reviews or ratings</li>
-              <li>Communicate with us or other users through our Services</li>
-              <li>Subscribe to our newsletters or marketing communications</li>
-            </ul>
-            <p className="mb-4">
-              This information may include your name, email address, phone number, postal address, payment information,
-              photos, and any other information you choose to provide.
-            </p>
-
-            <h3 className="text-lg font-semibold mt-6 mb-3">1.2 Information We Collect Automatically</h3>
-            <p className="mb-4">
-              When you access or use our Services, we automatically collect certain information, including:
-            </p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>
-                Log Information: We collect log information about your use of our Services, including the type of
-                browser you use, access times, pages viewed, your IP address, and the page you visited before navigating
-                to our Services.
-              </li>
-              <li>
-                Device Information: We collect information about the device you use to access our Services, including
-                the hardware model, operating system and version, unique device identifiers, and mobile network
-                information.
-              </li>
-              <li>
-                Location Information: We may collect information about your location when you access or use our
-                Services, such as your IP address or mobile device's GPS signal.
-              </li>
-              <li>
-                Cookies and Similar Technologies: We use cookies and similar technologies to collect information about
-                your interactions with our Services and other websites.
-              </li>
-            </ul>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">2. How We Use Your Information</h2>
-            <p className="mb-4">We use the information we collect to:</p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>Provide, maintain, and improve our Services</li>
-              <li>Process transactions and send related information, including confirmations and receipts</li>
-              <li>Send you technical notices, updates, security alerts, and support and administrative messages</li>
-              <li>Respond to your comments, questions, and requests</li>
-              <li>
-                Communicate with you about products, services, offers, promotions, and events, and provide news and
-                information we think will be of interest to you
-              </li>
-              <li>Monitor and analyze trends, usage, and activities in connection with our Services</li>
-              <li>
-                Detect, investigate, and prevent fraudulent transactions and other illegal activities and protect the
-                rights and property of Second Home and others
-              </li>
-              <li>
-                Personalize and improve the Services and provide content or features that match user profiles or
-                interests
-              </li>
-            </ul>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">3. Sharing of Information</h2>
-            <p className="mb-4">We may share your information as follows:</p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>With property owners when you make a booking</li>
-              <li>With other users when you post reviews or ratings</li>
-              <li>
-                With vendors, consultants, and other service providers who need access to such information to carry out
-                work on our behalf
-              </li>
-              <li>
-                In response to a request for information if we believe disclosure is in accordance with, or required by,
-                any applicable law, regulation, or legal process
-              </li>
-              <li>
-                If we believe your actions are inconsistent with our user agreements or policies, or to protect the
-                rights, property, and safety of Second Home or others
-              </li>
-              <li>
-                In connection with, or during negotiations of, any merger, sale of company assets, financing, or
-                acquisition of all or a portion of our business by another company
-              </li>
-              <li>
-                Between and among Second Home and our current and future parents, affiliates, subsidiaries, and other
-                companies under common control and ownership
-              </li>
-              <li>With your consent or at your direction</li>
-            </ul>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">4. Data Retention</h2>
-            <p className="mb-4">
-              We store the information we collect about you for as long as is necessary for the purpose(s) for which we
-              originally collected it. We may retain certain information for legitimate business purposes or as required
-              by law.
-            </p>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">5. Your Rights and Choices</h2>
-            <p className="mb-4">You have several rights regarding your personal information:</p>
-            <ul className="list-disc pl-6 mb-4 space-y-2">
-              <li>
-                Account Information: You may update, correct, or delete your account information at any time by logging
-                into your account or contacting us.
-              </li>
-              <li>
-                Marketing Communications: You may opt out of receiving promotional emails from us by following the
-                instructions in those emails. If you opt out, we may still send you non-promotional emails, such as
-                those about your account or our ongoing business relations.
-              </li>
-              <li>
-                Cookies: Most web browsers are set to accept cookies by default. If you prefer, you can usually choose
-                to set your browser to remove or reject browser cookies.
-              </li>
-              <li>
-                Access, Correction, Deletion: Depending on your location, you may have the right to access personal
-                information we hold about you and to ask that your personal information be corrected, updated, or
-                deleted.
-              </li>
-            </ul>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">6. Data Security</h2>
-            <p className="mb-4">
-              We take reasonable measures to help protect information about you from loss, theft, misuse, and
-              unauthorized access, disclosure, alteration, and destruction.
-            </p>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">7. Children's Privacy</h2>
-            <p className="mb-4">
-              Our Services are not directed to children under 18 years of age, and we do not knowingly collect personal
-              information from children under 18. If we learn that we have collected personal information of a child
-              under 18, we will take steps to delete such information from our files as soon as possible.
-            </p>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">8. Changes to this Privacy Policy</h2>
-            <p className="mb-4">
-              We may change this Privacy Policy from time to time. If we make changes, we will notify you by revising
-              the date at the top of the policy and, in some cases, we may provide you with additional notice (such as
-              adding a statement to our website or sending you a notification).
-            </p>
-
-            <h2 className="text-xl font-bold mt-8 mb-4">9. Contact Us</h2>
-            <p className="mb-4">If you have any questions about this Privacy Policy, please contact us at:</p>
-            <p className="mb-4">
-              Email: second.home2k25@gmail.com
-              <br />
-              Address: 123 Startup Hub, Koramangala, Bangalore, India - 560034
-            </p>
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Hero Section */}
+      <section className="bg-slate-950 text-slate-100 py-20 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-blue-500/10" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl" />
+        
+        <div className="max-w-4xl mx-auto relative z-10 text-center mt-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6">
+            <Shield className="w-4 h-4 text-orange-400" />
+            <span className="text-sm font-medium text-slate-300">Your Data, Your Control</span>
           </div>
+          <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">Privacy Policy</h1>
+          <p className="text-lg md:text-xl text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+            We believe in complete transparency. Here is exactly what data we collect, why we collect it, and how we protect it.
+          </p>
+          <p className="text-sm text-slate-500">Last Updated: {lastUpdated}</p>
+        </div>
+      </section>
 
-          <div className="mt-10 flex justify-center">
-            <Button asChild>
-              <Link href="/">Return to Home</Link>
-            </Button>
+      {/* Content Section */}
+      <section className="py-16 px-4 -mt-10 relative z-20">
+        <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+          <div className="p-8 md:p-12 space-y-12">
+            
+            {/* 1. Information We Collect */}
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
+                  <Database className="w-6 h-6 text-orange-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">1. Information We Collect</h2>
+              </div>
+              <div className="space-y-6 text-slate-600 leading-relaxed">
+                <p>When you use SecondHome to find a PG, flat, or roommate, we collect specific data to provide you with the best experience and safest environment:</p>
+                
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                  <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-orange-500" /> Account & Identity Data
+                  </h3>
+                  <p className="text-sm mb-4">When you create an account, we collect your basic identity information:</p>
+                  <ul className="list-disc list-inside space-y-2 text-sm ml-2">
+                    <li>Name, Email address, and Phone number</li>
+                    <li>Date of Birth, Gender, and Nationality</li>
+                    <li>Current College/University and Course details</li>
+                    <li>Permanent Address, City, State, and Pincode</li>
+                  </ul>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                  <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-orange-500" /> SecMatch Roommate Data
+                  </h3>
+                  <p className="text-sm mb-4">To power our AI compatibility engine, we collect lifestyle preferences:</p>
+                  <ul className="list-disc list-inside space-y-2 text-sm ml-2">
+                    <li>Sleep schedules (Early bird, night owl, etc.)</li>
+                    <li>Cleanliness levels and cooking habits</li>
+                    <li>Budget constraints and preferred locations</li>
+                    <li>Personal interests and short bio</li>
+                    <li>Your swipe/match history to prevent showing duplicates</li>
+                  </ul>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                  <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-orange-500" /> Property Owner Data
+                  </h3>
+                  <p className="text-sm mb-4">For owners listing properties or messes:</p>
+                  <ul className="list-disc list-inside space-y-2 text-sm ml-2">
+                    <li>Property details, amenities, pricing, and exact location</li>
+                    <li>Property photos and verification documents</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* 2. How We Use It */}
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <RefreshCw className="w-6 h-6 text-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">2. How We Use Your Information</h2>
+              </div>
+              <div className="space-y-4 text-slate-600 leading-relaxed">
+                <p>We do not sell your personal data to third-party data brokers. We use your data strictly to:</p>
+                <ul className="space-y-4 mt-4">
+                  <li className="flex gap-3">
+                    <ChevronRight className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Power AI Matchmaking:</strong> We analyze your lifestyle preferences to calculate a compatibility score with other potential roommates.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <ChevronRight className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Ensure Safety & Verification:</strong> We verify emails, phone numbers, and student status to maintain a trusted community of verified individuals.</span>
+                  </li>
+                  <li className="flex gap-3">
+                    <ChevronRight className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <span><strong>Facilitate Communication:</strong> We use your contact details to send important notifications, match alerts, and allow secure in-app chatting.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* 3. Privacy & Security */}
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <Lock className="w-6 h-6 text-emerald-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-900">3. Privacy Controls & Security</h2>
+              </div>
+              <div className="space-y-4 text-slate-600 leading-relaxed">
+                <p>We've built privacy directly into the core of SecondHome:</p>
+                <div className="grid sm:grid-cols-2 gap-4 mt-6">
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                    <Eye className="w-6 h-6 text-emerald-500 mb-3" />
+                    <h4 className="font-bold text-slate-900 mb-2">Hidden Contact Info</h4>
+                    <p className="text-sm">Your phone number is strictly hidden by default. It is only revealed when you and another user mutually match and approve contact sharing.</p>
+                  </div>
+                  <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                    <Server className="w-6 h-6 text-emerald-500 mb-3" />
+                    <h4 className="font-bold text-slate-900 mb-2">Secure Infrastructure</h4>
+                    <p className="text-sm">Your data is stored securely in modern encrypted databases. Passwords are cryptographically hashed and never stored in plain text.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-slate-100" />
+
+            {/* 4. Your Rights */}
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">4. Your Rights & Choices</h2>
+              <div className="text-slate-600 leading-relaxed space-y-4">
+                <p>You have full control over your data. At any time, you can:</p>
+                <ul className="list-disc list-inside space-y-2 ml-2">
+                  <li>Toggle your profile visibility (hide yourself from the matching pool).</li>
+                  <li>Update or correct your personal preferences and details.</li>
+                  <li>Opt-out of email and SMS notifications.</li>
+                  <li>Request complete deletion of your account and associated data.</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div className="mt-12 p-8 bg-slate-950 text-white rounded-2xl text-center">
+              <h3 className="text-xl font-bold mb-3">Questions about your privacy?</h3>
+              <p className="text-slate-400 mb-6 text-sm">We're here to help. Contact our Data Protection team.</p>
+              <Link href="/contact" className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors">
+                Contact Support
+              </Link>
+            </div>
+
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </section>
     </div>
   )
 }

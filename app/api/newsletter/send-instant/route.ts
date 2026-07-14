@@ -43,7 +43,7 @@ Requirements:
 - Create FOMO (limited availability)
 - Strong call-to-action: "View Now" or "Book Your Visit"
 - Short and punchy (150-200 words)
-- Use emojis for excitement 🔥⚡✨
+- Use emojis for excitement 🔥⚡
 - Mobile-friendly HTML
 
 Format as HTML with inline CSS (email-safe).`
